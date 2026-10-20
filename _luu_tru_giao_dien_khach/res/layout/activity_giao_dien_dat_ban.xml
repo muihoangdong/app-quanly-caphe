@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quản trị / nhân viên: danh sách lượt đặt bàn của khách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/canvas"
+    android:orientation="vertical"
+    tools:context=".GiaoDienDatBanActivity">
+
+    <include layout="@layout/layout_thanh_tieu_de" />
+
+    <EditText
+        android:id="@+id/edtTimDatBan"
+        style="@style/ONhapLieu"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="8dp"
+        android:hint="Nhập mã đặt bàn khách đưa, tên hoặc SĐT"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textSize="14sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none">
+
+        <RadioGroup
+            android:id="@+id/rgLocDatBan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radDatHomNay"
+                style="@style/ChipLoc"
+                android:checked="true"
+                android:text="Hôm nay" />
+
+            <RadioButton
+                android:id="@+id/radDatSapToi"
+                style="@style/ChipLoc"
+                android:text="Chờ đến" />
+
+            <RadioButton
+                android:id="@+id/radDatDaNhan"
+                style="@style/ChipLoc"
+                android:text="Đã nhận bàn" />
+
+            <RadioButton
+                android:id="@+id/radDatDaHuy"
+                style="@style/ChipLoc"
+                android:text="Hủy / Không đến" />
+
+            <RadioButton
+                android:id="@+id/radDatTatCa"
+                style="@style/ChipLoc"
+                android:text="Tất cả" />
+        </RadioGroup>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/txtTongDatBan"
+        style="@style/TextNhan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        tools:text="3 lượt đặt • 10 khách" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvDatBan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:padding="16dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/txtKhongCoDatBan"
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không có lượt đặt bàn nào"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

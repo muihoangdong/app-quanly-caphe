@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khách: giỏ hàng & thanh toán -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tch_nen"
+    android:orientation="vertical"
+    tools:context=".KhachGioHangActivity">
+
+    <include layout="@layout/layout_thanh_tieu_de" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- Hình thức -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/KTieuDeMuc"
+                    android:text="Hình thức nhận món"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/rgHinhThuc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radTaiQuan"
+                        style="@style/KChonThe"
+                        android:layout_marginEnd="8dp"
+                        android:checked="true"
+                        android:drawableTop="@drawable/ic_table"
+                        android:text="Dùng tại quán" />
+
+                    <RadioButton
+                        android:id="@+id/radMangDi"
+                        style="@style/KChonThe"
+                        android:drawableTop="@drawable/ic_bag"
+                        android:text="Mang đi" />
+                </RadioGroup>
+
+                <!-- Dùng tại quán: chọn lượt đặt bàn -->
+                <LinearLayout
+                    android:id="@+id/layoutChonDatBan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/KNhan"
+                        android:text="Bàn đã đặt" />
+
+                    <Spinner
+                        android:id="@+id/spDatBan"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_k_o_nhap"
+                        android:paddingStart="8dp" />
+
+                    <TextView
+                        android:id="@+id/txtChuaDatBan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_k_the_cam"
+                        android:padding="12dp"
+                        android:text="Bạn chưa có lịch đặt bàn nào. Chạm để đặt bàn trước, hoặc chọn Mang đi."
+                        android:textColor="@color/tch_cam_dam"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Món đã chọn -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/KTieuDeMuc"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="Sản phẩm đã chọn"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/txtThemMonGio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_k_pill_nhat"
+                        android:paddingStart="12dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="4dp"
+                        android:text="+ Thêm"
+                        android:textColor="@color/tch_cam"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutDongGio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/txtGioRong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="Giỏ hàng đang trống"
+                    android:textColor="@color/tch_chu_phu"
+                    android:visibility="gone" />
+
+                <TextView
+                    style="@style/KNhan"
+                    android:text="Ghi chú cho quán" />
+
+                <EditText
+                    android:id="@+id/edtGhiChuDon"
+                    style="@style/KONhap"
+                    android:hint="VD: lên món khi tôi tới, lấy lúc 8h..."
+                    android:importantForAutofill="no"
+                    android:inputType="textCapSentences" />
+            </LinearLayout>
+
+            <!-- Phương thức thanh toán -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/KTieuDeMuc"
+                    android:text="Phương thức thanh toán"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/rgThanhToan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radTraTaiQuay"
+                        style="@style/KChonThe"
+                        android:layout_marginEnd="6dp"
+                        android:checked="true"
+                        android:drawableTop="@drawable/ic_cash"
+                        android:text="Tại quầy" />
+
+                    <RadioButton
+                        android:id="@+id/radMomo"
+                        style="@style/KChonThe"
+                        android:layout_marginEnd="6dp"
+                        android:drawableTop="@drawable/ic_wallet"
+                        android:text="MoMo" />
+
+                    <RadioButton
+                        android:id="@+id/radZalo"
+                        style="@style/KChonThe"
+                        android:layout_marginEnd="6dp"
+                        android:drawableTop="@drawable/ic_qr"
+                        android:text="ZaloPay" />
+
+                    <RadioButton
+                        android:id="@+id/radThe"
+                        style="@style/KChonThe"
+                        android:drawableTop="@drawable/ic_card"
+                        android:text="Thẻ ATM" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thành tiền"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/txtThanhTienGio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="14sp"
+                        tools:text="123.000đ" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Giá đã gồm VAT. Đơn được quán xác nhận trước khi pha chế."
+                    android:textColor="@color/tch_chu_phu"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/tch_cam"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtHinhThucGio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/tch_cam_nhat"
+                android:textSize="12sp"
+                tools:text="Dùng tại quán • 3 món" />
+
+            <TextView
+                android:id="@+id/txtTongGioKhach"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="123.000đ" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDatHang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="ĐẶT HÀNG"
+            android:textColor="@color/tch_cam"
+            android:textStyle="bold"
+            app:backgroundTint="@color/white"
+            app:cornerRadius="999dp" />
+    </LinearLayout>
+</LinearLayout>

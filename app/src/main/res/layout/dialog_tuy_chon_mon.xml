@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại tùy chọn khi gọi món: số lượng, mức đường, mức đá, ghi chú -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgMonTuyChon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_icon_soft"
+                android:contentDescription="Ảnh món"
+                tools:src="@drawable/ic_coffee" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtMoTaTuyChon"
+                    style="@style/TextNhan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Kem béo bồng bềnh" />
+
+                <TextView
+                    android:id="@+id/txtGiaTuyChon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/caramel_dark"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="39.000đ" />
+            </LinearLayout>
+
+            <!-- Stepper số lượng -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_pill_latte"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnGiamSoLuong"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Giảm"
+                    android:src="@drawable/ic_remove" />
+
+                <TextView
+                    android:id="@+id/txtSoLuongTuyChon"
+                    android:layout_width="28dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnTangSoLuong"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Tăng"
+                    android:src="@drawable/ic_add" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutDuongDa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextNhapLieu"
+                android:layout_marginTop="16dp"
+                android:text="Mức đường" />
+
+            <RadioGroup
+                android:id="@+id/rgDuong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radDuong0"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="0%"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radDuong30"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="30%"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radDuong50"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="50%"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radDuong100"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="Chuẩn"
+                    android:textSize="13sp" />
+            </RadioGroup>
+
+            <TextView
+                style="@style/TextNhapLieu"
+                android:text="Mức đá" />
+
+            <RadioGroup
+                android:id="@+id/rgDa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radDa0"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="Không đá"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radDa50"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="Ít đá"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radDa100"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Chuẩn"
+                    android:textSize="13sp" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Ghi chú cho quầy Bar" />
+
+        <EditText
+            android:id="@+id/edtGhiChuMon"
+            style="@style/ONhapLieu"
+            android:hint="VD: thêm kem cheese, mang về..."
+            android:inputType="textCapSentences" />
+    </LinearLayout>
+</ScrollView>

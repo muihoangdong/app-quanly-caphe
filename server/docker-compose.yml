@@ -1,0 +1,31 @@
+# Chạy: docker compose up -d   (trong thư mục server)
+# MySQL: localhost:3307 (app Android + DBeaver; 3307 để không trùng MySQL khác trên máy)
+name: quanlycafe
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: quanlycafe-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      TZ: Asia/Ho_Chi_Minh
+    command:
+      - "--default-time-zone=+07:00"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      # Driver JDBC trên Android (Connector/J 5.1) chỉ hỗ trợ kiểu đăng nhập mysql_native_password
+      - "--mysql-native-password=ON"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  mysql_data:

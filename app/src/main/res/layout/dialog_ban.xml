@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại thêm / sửa bàn -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Tên bàn *" />
+
+    <EditText
+        android:id="@+id/edtTenBan"
+        style="@style/ONhapLieu"
+        android:hint="VD: Bàn 07"
+        android:inputType="textCapWords" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Khu vực *" />
+
+    <AutoCompleteTextView
+        android:id="@+id/edtKhuVuc"
+        style="@style/ONhapLieu"
+        android:completionThreshold="0"
+        android:hint="Tầng 1, Tầng 2, Sân vườn..."
+        android:inputType="textCapSentences" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Số chỗ ngồi tối đa" />
+
+    <EditText
+        android:id="@+id/edtSoCho"
+        style="@style/ONhapLieu"
+        android:hint="4"
+        android:inputType="number"
+        android:maxLength="2" />
+</LinearLayout>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một dòng trong giỏ hàng của khách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/imgDongGio"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/bg_icon_soft"
+        android:contentDescription="Ảnh món"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_coffee" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenDongGio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tch_chu"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Cà phê Muối Đặc Biệt" />
+
+        <TextView
+            android:id="@+id/txtGhiChuDongGio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tch_chu_phu"
+            android:textSize="12sp"
+            tools:text="Ít đá" />
+
+        <TextView
+            android:id="@+id/txtGiaDongGio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/tch_chu"
+            android:textSize="13sp"
+            tools:text="78.000đ" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnGiamDongGio"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_k_tron_nhat"
+        android:contentDescription="Giảm"
+        android:src="@drawable/ic_remove"
+        app:tint="@color/tch_cam" />
+
+    <TextView
+        android:id="@+id/txtSoLuongDongGio"
+        android:layout_width="34dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/tch_chu"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="2" />
+
+    <ImageButton
+        android:id="@+id/btnTangDongGio"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_k_tron_cam"
+        android:contentDescription="Tăng"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white" />
+</LinearLayout>

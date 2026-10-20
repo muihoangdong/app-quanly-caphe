@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một tài khoản nhân viên trong danh sách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/txtAvatarNhanVien"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_circle_amber"
+        android:gravity="center"
+        android:textColor="@color/caramel_dark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="N" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenNhanVien"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Lê Thu Ngân" />
+
+        <TextView
+            android:id="@+id/txtChucVuNhanVien"
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            tools:text="Thu ngân • @nhanvien" />
+
+        <TextView
+            android:id="@+id/txtSdtNhanVien"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            tools:text="0901000002" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtVaiTroNhanVien"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_latte"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/espresso"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Nhân viên" />
+
+        <TextView
+            android:id="@+id/txtTrangThaiNhanVien"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_pill_green"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/status_green"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Đang làm" />
+    </LinearLayout>
+</LinearLayout>

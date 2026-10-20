@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một dòng món trong hóa đơn (thanh toán / xem chi tiết) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/txtSoLuongDong"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/caramel_dark"
+        android:textStyle="bold"
+        tools:text="2×" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenDong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            tools:text="Cà phê Muối Đặc Biệt" />
+
+        <TextView
+            android:id="@+id/txtGhiChuDong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            tools:text="39.000đ • 50% đường" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtThanhTienDong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_primary"
+        tools:text="78.000đ" />
+</LinearLayout>

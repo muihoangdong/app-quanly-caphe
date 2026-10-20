@@ -1,0 +1,228 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Theme theo design system "Espresso POS" (thư mục stitch) -->
+    <style name="Base.Theme.App_QuanLyCafe" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/espresso</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/caramel</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/caramel_soft</item>
+        <item name="colorOnPrimaryContainer">@color/espresso</item>
+        <item name="colorSecondaryContainer">@color/caramel_soft</item>
+        <item name="colorOnSecondaryContainer">@color/espresso</item>
+        <item name="colorSurface">@color/canvas</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:colorBackground">@color/canvas</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.App_QuanLyCafe" parent="Base.Theme.App_QuanLyCafe" />
+
+    <style name="ChiBaoDieuHuong" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/caramel_soft</item>
+    </style>
+
+    <!-- Kiểu chữ -->
+    <style name="TextTieuDe">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextNhan">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="TextNhapLieu">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="ONhapLieu">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:background">@drawable/bg_input</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+
+    <style name="TheCard">
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <!-- Chip lọc (RadioButton dạng pill) -->
+    <style name="ChipLoc">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/bg_chip</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:textColor">@color/text_chip</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Ô chọn phương thức thanh toán -->
+    <style name="OPhuongThuc">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">6dp</item>
+        <item name="android:background">@drawable/bg_pttt</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:textColor">@color/text_chip</item>
+        <item name="android:drawableTint">@color/text_chip</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NutChinh" parent="Widget.Material3.Button">
+        <item name="android:minHeight">56dp</item>
+        <item name="backgroundTint">@color/caramel</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="NutPhu" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="backgroundTint">@color/latte_dark</item>
+        <item name="android:textColor">@color/espresso</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconTint">@color/espresso</item>
+    </style>
+
+    <style name="NutToi" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="backgroundTint">@color/espresso_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="NutNguyHiem" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="backgroundTint">@color/status_red_bg</item>
+        <item name="android:textColor">@color/status_red</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconTint">@color/status_red</item>
+    </style>
+
+    <!-- ===== Giao diện khách hàng (phong cách The Coffee House) ===== -->
+    <style name="ChiBaoKhach" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/tch_cam_nhat</item>
+    </style>
+
+    <style name="KChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">38dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/bg_k_chip</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">@color/k_chip_chu</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="KTieuDeMuc">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/tch_chu</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="KNhan">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">@color/tch_chu</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="KONhap">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/bg_k_o_nhap</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:drawableTint">@color/tch_chu_phu</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/tch_chu</item>
+        <item name="android:textColorHint">@color/tch_chu_phu</item>
+    </style>
+
+    <style name="KNutChinh" parent="Widget.Material3.Button">
+        <item name="android:minHeight">52dp</item>
+        <item name="backgroundTint">@color/tch_cam</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">999dp</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="KNutVien" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textColor">@color/tch_cam</item>
+        <item name="android:textStyle">bold</item>
+        <item name="strokeColor">@color/tch_cam</item>
+        <item name="cornerRadius">999dp</item>
+        <item name="iconTint">@color/tch_cam</item>
+    </style>
+
+    <!-- Một dòng trong menu tài khoản -->
+    <style name="KDongMenu">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:drawablePadding">14dp</item>
+        <item name="android:drawableTint">@color/tch_chu</item>
+        <item name="android:drawableEnd">@drawable/ic_chevron_right</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textColor">@color/tch_chu</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="KChonThe">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minHeight">64dp</item>
+        <item name="android:background">@drawable/bg_k_chon_the</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:textColor">@color/k_chip_chu</item>
+        <item name="android:drawableTint">@color/k_chip_chu</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

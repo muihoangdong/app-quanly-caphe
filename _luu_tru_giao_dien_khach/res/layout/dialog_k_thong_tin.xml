@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại sửa thông tin cá nhân của khách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Họ và tên *" />
+
+    <EditText
+        android:id="@+id/edtHoTenTT"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName|textCapWords" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Số điện thoại * (dùng để đăng nhập)" />
+
+    <EditText
+        android:id="@+id/edtSdtTT"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="phone"
+        android:maxLength="11" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Email" />
+
+    <EditText
+        android:id="@+id/edtEmailTT"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress" />
+</LinearLayout>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khách: tài khoản (tham khảo thecoffeehouse.com/account) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tch_nen"
+    android:orientation="vertical"
+    tools:context=".KhachTaiKhoanActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <!-- Thông tin thành viên -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/KTieuDeMuc"
+                    android:text="Tài khoản" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_k_banner"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/txtAvatarTaiKhoan"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/bg_circle_latte"
+                        android:gravity="center"
+                        android:textColor="@color/tch_cam"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        tools:text="A" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtTenTaiKhoan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="Nguyễn Minh Anh" />
+
+                        <TextView
+                            android:id="@+id/txtSdtTaiKhoan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/tch_cam_nhat"
+                            android:textSize="13sp"
+                            tools:text="0909123456" />
+
+                        <TextView
+                            android:id="@+id/txtThanhVienTu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/bg_k_nen_tron_trang"
+                            android:paddingStart="10dp"
+                            android:paddingTop="2dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="2dp"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            tools:text="Thành viên từ 10/2026" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Thống kê -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_k_the"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/txtSoLuotDat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/tch_cam"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="3" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lượt đặt bàn"
+                            android:textColor="@color/tch_chu_phu"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_k_the"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/txtSoDonMon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/tch_cam"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="5" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đơn món"
+                            android:textColor="@color/tch_chu_phu"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_k_the"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/txtTongChiTieu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/tch_cam"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="320K" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đã chi tiêu"
+                            android:textColor="@color/tch_chu_phu"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tiện ích -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="6dp"
+                android:text="Tiện ích"
+                android:textColor="@color/tch_chu_phu"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_k_the"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dongLichSuDatBan"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_calendar"
+                    android:text="Lịch sử đặt bàn" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="54dp"
+                    android:background="@color/tch_vien" />
+
+                <TextView
+                    android:id="@+id/dongLichSuDon"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_receipt"
+                    android:text="Lịch sử đơn hàng" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="54dp"
+                    android:background="@color/tch_vien" />
+
+                <TextView
+                    android:id="@+id/dongVeQuan"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_location"
+                    android:text="Thông tin quán" />
+            </LinearLayout>
+
+            <!-- Hỗ trợ / tài khoản -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="6dp"
+                android:text="Tài khoản"
+                android:textColor="@color/tch_chu_phu"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_k_the"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dongThongTinCaNhan"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_person"
+                    android:text="Thông tin cá nhân" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="54dp"
+                    android:background="@color/tch_vien" />
+
+                <TextView
+                    android:id="@+id/dongDoiMatKhau"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:text="Đổi mật khẩu" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="54dp"
+                    android:background="@color/tch_vien" />
+
+                <TextView
+                    android:id="@+id/dongDangXuat"
+                    style="@style/KDongMenu"
+                    android:drawableStart="@drawable/ic_logout"
+                    android:drawableTint="@color/status_red"
+                    android:text="Đăng xuất"
+                    android:textColor="@color/status_red" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_k_bottom_nav" />
+</LinearLayout>

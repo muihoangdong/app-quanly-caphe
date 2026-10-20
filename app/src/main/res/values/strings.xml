@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Espresso POS</string>
+    <string name="ca_lam">● Quản lý quán • Nhân viên &amp; Admin</string>
+    <string name="gio_mo_cua">Mở cửa 07:00 – 22:00 mỗi ngày</string>
+    <string name="dia_chi_quan">123 Đường Cà Phê, Quận 1, TP.HCM</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thanh điều hướng dưới của khách: Trang chủ / Đặt món / Đặt bàn / Đơn của tôi / Tài khoản -->
+<com.google.android.material.bottomnavigation.BottomNavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNavKhach"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_bar"
+    app:itemActiveIndicatorStyle="@style/ChiBaoKhach"
+    app:itemIconTint="@color/k_nav_item"
+    app:itemTextColor="@color/k_nav_item"
+    app:labelVisibilityMode="labeled"
+    app:menu="@menu/menu_khach" />

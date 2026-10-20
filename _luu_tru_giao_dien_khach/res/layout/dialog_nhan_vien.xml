@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại thêm / sửa tài khoản nhân viên -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="24dp">
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Họ và tên *" />
+
+        <EditText
+            android:id="@+id/edtHoTenNV"
+            style="@style/ONhapLieu"
+            android:hint="VD: Nguyễn Văn B"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName|textCapWords" />
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Tên đăng nhập *" />
+
+        <EditText
+            android:id="@+id/edtTenDangNhapNV"
+            style="@style/ONhapLieu"
+            android:hint="VD: thungan2"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions" />
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Số điện thoại" />
+
+        <EditText
+            android:id="@+id/edtSdtNV"
+            style="@style/ONhapLieu"
+            android:hint="09xxxxxxxx"
+            android:importantForAutofill="no"
+            android:inputType="phone"
+            android:maxLength="11" />
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Chức vụ" />
+
+        <AutoCompleteTextView
+            android:id="@+id/edtChucVuNV"
+            style="@style/ONhapLieu"
+            android:completionThreshold="0"
+            android:hint="Thu ngân, Pha chế, Phục vụ..."
+            android:inputType="textCapSentences" />
+
+        <TextView
+            style="@style/TextNhapLieu"
+            android:text="Quyền" />
+
+        <RadioGroup
+            android:id="@+id/rgVaiTroNV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radVaiTroNhanVien"
+                style="@style/ChipLoc"
+                android:checked="true"
+                android:text="Nhân viên" />
+
+            <RadioButton
+                android:id="@+id/radVaiTroQuanTri"
+                style="@style/ChipLoc"
+                android:text="Quản trị viên" />
+        </RadioGroup>
+
+        <TextView
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Nhân viên: Bàn, Thực đơn, Đơn hàng. Quản trị: thêm Nhân viên và Báo cáo."
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/txtNhanMatKhauNV"
+            style="@style/TextNhapLieu"
+            android:text="Mật khẩu * (ít nhất 6 ký tự)" />
+
+        <EditText
+            android:id="@+id/edtMatKhauNV"
+            style="@style/ONhapLieu"
+            android:importantForAutofill="no"
+            android:inputType="textPassword" />
+    </LinearLayout>
+</ScrollView>

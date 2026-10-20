@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thanh giỏ hàng nổi phía dưới màn hình Đặt món -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutThanhGio"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_k_thanh_gio"
+    android:elevation="6dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="Giỏ hàng"
+        android:src="@drawable/ic_bag"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/txtSoMonGio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="3 món • 123.000đ" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xem giỏ hàng ›"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Đăng ký tài khoản khách hàng -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".DangKyActivity">
+
+    <include layout="@layout/layout_thanh_tieu_de" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chào mừng bạn đến với quán ☕"
+                android:textColor="@color/tch_chu"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Tạo tài khoản để đặt bàn trước và gọi món qua app"
+                android:textColor="@color/tch_chu_phu"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/KNhan"
+                android:text="Họ và tên *" />
+
+            <EditText
+                android:id="@+id/edtHoTenDK"
+                style="@style/KONhap"
+                android:drawableStart="@drawable/ic_person"
+                android:hint="Nguyễn Văn A"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName|textCapWords" />
+
+            <TextView
+                style="@style/KNhan"
+                android:text="Số điện thoại * (dùng để đăng nhập)" />
+
+            <EditText
+                android:id="@+id/edtSdtDK"
+                style="@style/KONhap"
+                android:drawableStart="@drawable/ic_phone"
+                android:hint="09xxxxxxxx"
+                android:importantForAutofill="no"
+                android:inputType="phone"
+                android:maxLength="11" />
+
+            <TextView
+                style="@style/KNhan"
+                android:text="Email" />
+
+            <EditText
+                android:id="@+id/edtEmailDK"
+                style="@style/KONhap"
+                android:drawableStart="@drawable/ic_mail"
+                android:hint="ban@email.com"
+                android:importantForAutofill="no"
+                android:inputType="textEmailAddress" />
+
+            <TextView
+                style="@style/KNhan"
+                android:text="Mật khẩu * (ít nhất 6 ký tự)" />
+
+            <EditText
+                android:id="@+id/edtMatKhauDK"
+                style="@style/KONhap"
+                android:drawableStart="@drawable/ic_lock"
+                android:hint="••••••"
+                android:importantForAutofill="no"
+                android:inputType="textPassword" />
+
+            <TextView
+                style="@style/KNhan"
+                android:text="Nhập lại mật khẩu *" />
+
+            <EditText
+                android:id="@+id/edtNhapLaiDK"
+                style="@style/KONhap"
+                android:drawableStart="@drawable/ic_lock"
+                android:hint="••••••"
+                android:importantForAutofill="no"
+                android:inputType="textPassword" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDangKy"
+                style="@style/KNutChinh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Đăng ký" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

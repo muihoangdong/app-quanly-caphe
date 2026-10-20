@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thẻ một bàn còn trống trong màn hình Đặt bàn của khách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/bg_k_the"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imgBanTrong"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_k_tron_nhat"
+        android:contentDescription="Bàn"
+        android:padding="9dp"
+        android:src="@drawable/ic_table"
+        app:tint="@color/tch_cam" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenBanTrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tch_chu"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Bàn 05" />
+
+        <TextView
+            android:id="@+id/txtChiTietBanTrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tch_chu_phu"
+            android:textSize="12sp"
+            tools:text="Tầng 2 • 4 chỗ" />
+    </LinearLayout>
+</LinearLayout>

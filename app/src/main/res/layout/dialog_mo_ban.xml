@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại mở bàn: chọn số khách -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        style="@style/TextNhan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số khách" />
+
+    <!-- Stepper số lượng -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="52dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_pill_latte"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnGiamKhach"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Giảm"
+            android:src="@drawable/ic_remove" />
+
+        <TextView
+            android:id="@+id/txtSoKhach"
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnTangKhach"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Tăng"
+            android:src="@drawable/ic_add" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtGoiYSoCho"
+        style="@style/TextNhan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Tối đa 4 khách" />
+</LinearLayout>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khách: lịch sử đặt bàn và đơn món (tham khảo thecoffeehouse.com/my-orders) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tch_nen"
+    android:orientation="vertical"
+    tools:context=".KhachDonCuaToiActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            style="@style/KTieuDeMuc"
+            android:text="Đơn của tôi" />
+
+        <RadioGroup
+            android:id="@+id/rgLoaiDon"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_k_tim_kiem"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <RadioButton
+                android:id="@+id/radDonDatBan"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_tab_dang_nhap"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="Đặt bàn"
+                android:textColor="@color/k_chip_chu"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <RadioButton
+                android:id="@+id/radDonMon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_tab_dang_nhap"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Đơn món"
+                android:textColor="@color/k_chip_chu"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvDonCuaToi"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:padding="16dp"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/layoutKhongCoDon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:alpha="0.4"
+                android:contentDescription="Trống"
+                android:src="@drawable/ic_receipt" />
+
+            <TextView
+                android:id="@+id/txtKhongCoDon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Bạn chưa có đơn nào"
+                android:textColor="@color/tch_chu_phu" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBatDauDon"
+                style="@style/KNutVien"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Đặt ngay" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <include layout="@layout/layout_k_bottom_nav" />
+</LinearLayout>

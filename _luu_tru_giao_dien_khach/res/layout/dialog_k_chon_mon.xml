@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom sheet chọn số lượng / ghi chú khi khách thêm món -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/imgChonMon"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@drawable/bg_icon_soft"
+        android:contentDescription="Ảnh món"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_coffee" />
+
+    <TextView
+        android:id="@+id/txtTenChonMon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:textColor="@color/tch_chu"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="Cà phê Muối Đặc Biệt" />
+
+    <TextView
+        android:id="@+id/txtGiaChonMon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/tch_chu"
+        android:textSize="16sp"
+        tools:text="39.000đ" />
+
+    <TextView
+        android:id="@+id/txtMoTaChonMon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/tch_chu_phu"
+        android:textSize="13sp"
+        tools:text="Kem béo bồng bềnh, cà phê Robusta Đắk Lắk đậm vị" />
+
+    <TextView
+        style="@style/KNhan"
+        android:text="Yêu cầu khác" />
+
+    <EditText
+        android:id="@+id/edtGhiChuChonMon"
+        style="@style/KONhap"
+        android:hint="Ít đá, ít ngọt..."
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnGiamChonMon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_k_tron_nhat"
+            android:contentDescription="Giảm"
+            android:src="@drawable/ic_remove"
+            app:tint="@color/tch_cam" />
+
+        <TextView
+            android:id="@+id/txtSoLuongChonMon"
+            android:layout_width="44dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/tch_chu"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnTangChonMon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_k_tron_cam"
+            android:contentDescription="Tăng"
+            android:src="@drawable/ic_add"
+            app:tint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnXacNhanChonMon"
+            style="@style/KNutChinh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            tools:text="Thêm • 39.000đ" />
+    </LinearLayout>
+</LinearLayout>

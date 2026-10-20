@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Espresso POS design system -->
+    <color name="espresso">#3E2723</color>
+    <color name="espresso_dark">#271310</color>
+    <color name="mocha">#5D4037</color>
+    <color name="mocha_light">#8D6E63</color>
+    <color name="caramel">#F57C00</color>
+    <color name="caramel_dark">#964900</color>
+    <color name="caramel_soft">#FFE0C7</color>
+    <color name="canvas">#FBF9F6</color>
+    <color name="latte">#F5F0EB</color>
+    <color name="latte_dark">#EAE8E5</color>
+    <color name="card">#FFFFFF</color>
+    <color name="outline">#D7CCC8</color>
+    <color name="outline_soft">#EFEAE4</color>
+    <color name="text_primary">#1B1C1A</color>
+    <color name="text_secondary">#504442</color>
+    <color name="text_hint">#827472</color>
+
+    <color name="status_green">#2E7D32</color>
+    <color name="status_green_bg">#E8F5E9</color>
+    <color name="status_amber">#EF6C00</color>
+    <color name="status_amber_bg">#FFF3E0</color>
+    <color name="status_red">#C62828</color>
+    <color name="status_red_bg">#FFEBEE</color>
+    <color name="status_purple">#9C1C6B</color>
+
+    <!-- Giao diện khách hàng (phong cách The Coffee House) -->
+    <color name="tch_cam">#E57905</color>
+    <color name="tch_cam_dam">#B85F00</color>
+    <color name="tch_cam_nhat">#FEF3E6</color>
+    <color name="tch_nen">#F5F5F5</color>
+    <color name="tch_chu">#191919</color>
+    <color name="tch_chu_phu">#8A8A8A</color>
+    <color name="tch_vien">#EBEBEB</color>
+</resources>

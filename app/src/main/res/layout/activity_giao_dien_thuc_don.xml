@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Màn hình Thực đơn / Gọi món POS (thiết kế: th_c_n_g_i_m_n_pos) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/canvas"
+    android:orientation="vertical"
+    tools:context=".GiaoDienThucDonActivity">
+
+    <include layout="@layout/layout_header" />
+
+    <!-- Chế độ gọi món: thông tin bàn đang order -->
+    <LinearLayout
+        android:id="@+id/layoutBanDangGoi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_card_latte"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <FrameLayout
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_logo">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:contentDescription="Bàn"
+                android:src="@drawable/ic_table"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtBanDangGoi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="Bàn 01 • Tầng 1" />
+
+                <TextView
+                    android:id="@+id/txtSoKhachDangGoi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_pill_amber"
+                    android:paddingStart="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="2dp"
+                    android:textColor="@color/caramel_dark"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="4 khách" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtGioVaoDangGoi"
+                style="@style/TextNhan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                tools:text="● Đang phục vụ • Bắt đầu lúc 08:35" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnXemOrder"
+            style="@style/NutPhu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:text="Order"
+            android:textSize="13sp"
+            app:backgroundTint="@color/card"
+            app:icon="@drawable/ic_receipt"
+            app:iconSize="16dp" />
+    </LinearLayout>
+
+    <!-- Chế độ quản lý thực đơn -->
+    <LinearLayout
+        android:id="@+id/layoutQuanLyMon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextTieuDe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quản lý thực đơn"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/txtTongSoMon"
+                style="@style/TextNhan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="12 món • chạm để sửa" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDanhMuc"
+            style="@style/NutPhu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Danh mục"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_category"
+            app:iconTint="@color/caramel_dark" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnThemMonMoi"
+            style="@style/NutChinh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Thêm món"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_add" />
+    </LinearLayout>
+
+    <!-- Tìm kiếm -->
+    <EditText
+        android:id="@+id/edtTimKiem"
+        style="@style/ONhapLieu"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_card_latte"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="10dp"
+        android:hint="Tìm tên món, mã số..."
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <!-- Danh mục -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none">
+
+        <RadioGroup
+            android:id="@+id/rgDanhMuc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <GridView
+            android:id="@+id/gvThucUong"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:horizontalSpacing="12dp"
+            android:numColumns="2"
+            android:padding="16dp"
+            android:scrollbars="none"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="12dp" />
+
+        <TextView
+            android:id="@+id/txtKhongCoMon"
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không tìm thấy món phù hợp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Giỏ hàng (chế độ gọi món) -->
+    <LinearLayout
+        android:id="@+id/layoutGioHang"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_cart_bar"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="10dp"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:id="@+id/btnXemGio"
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|start"
+                android:background="@drawable/bg_icon_soft"
+                android:backgroundTint="#33FFFFFF"
+                android:contentDescription="Giỏ hàng"
+                android:padding="8dp"
+                android:src="@drawable/ic_bag"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/txtSoLuongGio"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_circle_caramel"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="4" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtTieuDeGio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.04"
+                android:textColor="#CCFFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="GIỎ HÀNG BÀN 01" />
+
+            <TextView
+                android:id="@+id/txtTongGio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="185.000đ" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuiBar"
+            style="@style/NutChinh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="52dp"
+            android:text="Gửi Bar"
+            app:icon="@drawable/ic_send"
+            app:iconGravity="end" />
+    </LinearLayout>
+
+    <include layout="@layout/layout_bottom_nav" />
+</LinearLayout>

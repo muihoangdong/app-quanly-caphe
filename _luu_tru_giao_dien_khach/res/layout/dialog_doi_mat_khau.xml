@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hộp thoại đổi mật khẩu (dùng cho khách và nhân viên) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        android:id="@+id/txtNhanMatKhauCu"
+        style="@style/TextNhapLieu"
+        android:text="Mật khẩu hiện tại" />
+
+    <EditText
+        android:id="@+id/edtMatKhauCu"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Mật khẩu mới (ít nhất 6 ký tự)" />
+
+    <EditText
+        android:id="@+id/edtMatKhauMoi"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
+
+    <TextView
+        style="@style/TextNhapLieu"
+        android:text="Nhập lại mật khẩu mới" />
+
+    <EditText
+        android:id="@+id/edtNhapLaiMoi"
+        style="@style/ONhapLieu"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
+</LinearLayout>

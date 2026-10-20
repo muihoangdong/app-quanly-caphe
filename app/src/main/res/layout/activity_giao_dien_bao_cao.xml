@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Màn hình Báo cáo doanh thu ca làm việc (thiết kế: b_o_c_o_doanh_thu_ca_l_m_vi_c) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/canvas"
+    android:orientation="vertical"
+    tools:context=".GiaoDienBaoCaoActivity">
+
+    <include layout="@layout/layout_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- Chọn khoảng thời gian -->
+            <RadioGroup
+                android:id="@+id/rgKhoangThoiGian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_latte"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <RadioButton
+                    android:id="@+id/radHomNay"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="Hôm nay"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rad7Ngay"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="7 ngày"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radThangNay"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="Tháng này"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/radTatCa"
+                    style="@style/ChipLoc"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="Tất cả"
+                    android:textSize="13sp" />
+            </RadioGroup>
+
+            <!-- Tổng doanh thu -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_card_dark"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_cash"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="#CCFFFFFF"
+                        android:letterSpacing="0.04"
+                        android:text="TỔNG DOANH THU"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtTangTruong"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_latte"
+                        android:backgroundTint="#33FFFFFF"
+                        android:paddingStart="10dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="2dp"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        tools:text="↗ +12.0%" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtTongDoanhThu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/white"
+                    android:textSize="38sp"
+                    android:textStyle="bold"
+                    tools:text="5.840.000đ" />
+
+                <TextView
+                    android:id="@+id/txtSoSanh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="13sp"
+                    tools:text="Cao hơn kỳ trước 625.000đ" />
+
+                <ProgressBar
+                    android:id="@+id/pbMucTieu"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/bg_progress"
+                    tools:progress="83" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtMucTieu"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        tools:text="Mục tiêu: 7.000.000đ" />
+
+                    <TextView
+                        android:id="@+id/txtPhanTramMucTieu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        tools:text="83.4% hoàn thành" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Số hóa đơn & TB/đơn -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    style="@style/TheCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng số hóa đơn" />
+
+                    <TextView
+                        android:id="@+id/txtSoHoaDon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        tools:text="74 đơn" />
+
+                    <TextView
+                        android:id="@+id/txtSoKhachPhucVu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/caramel_dark"
+                        android:textSize="12sp"
+                        tools:text="Phục vụ 180 khách" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/TheCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giá trị TB / đơn" />
+
+                    <TextView
+                        android:id="@+id/txtTrungBinhDon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        tools:text="78.900đ" />
+
+                    <TextView
+                        android:id="@+id/txtMonTrenDon"
+                        style="@style/TextNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        tools:text="~ 2.1 món / đơn" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Món bán chạy nhất -->
+            <LinearLayout
+                style="@style/TheCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_icon_soft"
+                    android:backgroundTint="@color/caramel_soft"
+                    android:contentDescription="Món bán chạy"
+                    android:padding="14dp"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/caramel" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.04"
+                        android:text="MÓN BÁN CHẠY NHẤT"
+                        android:textColor="@color/caramel_dark"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtMonBanChay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_primary"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="Cà phê Muối Cốt Dừa" />
+
+                    <TextView
+                        android:id="@+id/txtChiTietMonBanChay"
+                        style="@style/TextNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        tools:text="Đã phục vụ: 42 ly (32% tổng món)" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtDoanhThuMonBanChay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/caramel_dark"
+                    android:textStyle="bold"
+                    tools:text="1.890.000đ" />
+            </LinearLayout>
+
+            <!-- Doanh số theo khung giờ -->
+            <LinearLayout
+                style="@style/TheCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextTieuDe"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_chart"
+                        android:drawablePadding="8dp"
+                        android:text="Doanh số theo khung giờ" />
+
+                    <TextView
+                        android:id="@+id/txtGioCaoDiem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_amber"
+                        android:paddingStart="10dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="2dp"
+                        android:textColor="@color/caramel_dark"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="Đỉnh: 08:00" />
+                </LinearLayout>
+
+                <hutech.cntt.app_quanlycafe.view.BieuDoCot
+                    android:id="@+id/bieuDoGio"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+
+            <!-- Phương thức thanh toán -->
+            <LinearLayout
+                style="@style/TheCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextTieuDe"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_card"
+                        android:drawablePadding="8dp"
+                        android:text="Phương thức thanh toán" />
+
+                    <TextView
+                        android:id="@+id/txtSoPhuongThuc"
+                        style="@style/TextNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        tools:text="4 hình thức" />
+                </LinearLayout>
+
+                <!-- Thanh tỉ lệ xếp chồng -->
+                <LinearLayout
+                    android:id="@+id/thanhTiLe"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_pill_latte"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/layoutPhuongThuc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- Top món -->
+            <LinearLayout
+                style="@style/TheCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextTieuDe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_trending"
+                    android:drawablePadding="8dp"
+                    android:text="Top món bán chạy" />
+
+                <LinearLayout
+                    android:id="@+id/layoutTopMon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- Đối soát két tiền -->
+            <LinearLayout
+                style="@style/TheCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextTieuDe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_wallet"
+                    android:drawablePadding="8dp"
+                    android:text="Đối soát két tiền" />
+
+                <TextView
+                    android:id="@+id/txtDoiSoat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_card_latte"
+                    android:lineSpacingExtra="6dp"
+                    android:padding="12dp"
+                    android:textColor="@color/text_secondary"
+                    tools:text="Tiền mặt đầu ca: 1.000.000đ" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_card_amber"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TIỀN MẶT TRONG KÉT"
+                        android:textColor="@color/caramel_dark"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtTienMatKet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        tools:text="2.700.000đ" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnKetCa"
+                style="@style/NutChinh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Bàn giao ca &amp; In biên bản kết ca"
+                app:icon="@drawable/ic_print" />
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_nav" />
+</LinearLayout>

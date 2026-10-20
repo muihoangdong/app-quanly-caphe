@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một dòng thống kê trong báo cáo (phương thức thanh toán / top món) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bg_card_latte"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/txtChamMau"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/bg_circle_dark"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="1" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenDongBC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            tools:text="VietQR / Ngân hàng" />
+
+        <TextView
+            android:id="@+id/txtPhuDongBC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            tools:text="36 giao dịch" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtGiaTriDongBC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="2.760.000đ" />
+
+        <TextView
+            android:id="@+id/txtPhanTramDongBC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            tools:text="47.3%" />
+    </LinearLayout>
+</LinearLayout>

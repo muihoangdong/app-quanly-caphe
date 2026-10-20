@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ô bàn trên sơ đồ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBan"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card"
+    android:minHeight="180dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtTenBan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Bàn 01" />
+
+            <TextView
+                android:id="@+id/txtTrangThaiBan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_amber"
+                android:paddingStart="8dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/status_amber"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="● 45m" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtKhuVucBan"
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            tools:text="Tầng 1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="Số khách"
+                android:src="@drawable/ic_people"
+                app:tint="@color/mocha_light" />
+
+            <TextView
+                android:id="@+id/txtSoKhachBan"
+                style="@style/TextNhan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                tools:text="4/4" />
+
+            <ImageView
+                android:id="@+id/imgSoMon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="12dp"
+                android:contentDescription="Số món"
+                android:src="@drawable/ic_coffee"
+                app:tint="@color/mocha_light" />
+
+            <TextView
+                android:id="@+id/txtSoMonBan"
+                style="@style/TextNhan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                tools:text="4 món" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bàn có khách: tạm tính -->
+    <LinearLayout
+        android:id="@+id/layoutTamTinhBan"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/latte"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <TextView
+            style="@style/TextNhan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tạm tính" />
+
+        <TextView
+            android:id="@+id/txtTamTinhBan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="185.000đ" />
+    </LinearLayout>
+
+    <!-- Bàn trống: mở bàn / Bàn chờ tính: thanh toán -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnHanhDongBan"
+        style="@style/NutToi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:focusable="false"
+        android:text="Mở bàn"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textStart" />
+</LinearLayout>

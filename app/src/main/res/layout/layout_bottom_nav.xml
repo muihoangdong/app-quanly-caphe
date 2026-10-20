@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thanh điều hướng dưới: Bàn / Thực đơn / Đơn hàng / Báo cáo -->
+<com.google.android.material.bottomnavigation.BottomNavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNav"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_bar"
+    app:itemActiveIndicatorStyle="@style/ChiBaoDieuHuong"
+    app:itemIconTint="@color/nav_item"
+    app:itemTextColor="@color/nav_item"
+    app:labelVisibilityMode="labeled"
+    app:menu="@menu/menu_dieu_huong" />

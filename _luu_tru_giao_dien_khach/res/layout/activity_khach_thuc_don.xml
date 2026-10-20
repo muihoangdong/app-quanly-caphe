@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khách: Đặt món (tham khảo thecoffeehouse.com/product-listing) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".KhachThucDonActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/KTieuDeMuc"
+                android:text="Đặt món" />
+
+            <TextView
+                android:id="@+id/txtHinhThucDatMon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dùng tại quán theo bàn đã đặt hoặc mang đi"
+                android:textColor="@color/tch_chu_phu"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imgGioHangTop"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_k_tron_nhat"
+            android:contentDescription="Giỏ hàng"
+            android:padding="9dp"
+            android:src="@drawable/ic_bag"
+            app:tint="@color/tch_cam" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edtTimMon"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_k_tim_kiem"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="8dp"
+        android:drawableTint="@color/tch_chu_phu"
+        android:hint="Tìm kiếm món"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:textColorHint="@color/tch_chu_phu"
+        android:textSize="14sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none">
+
+        <RadioGroup
+            android:id="@+id/rgDanhMucKhach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/tch_vien" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvSanPham"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@color/tch_vien"
+            android:dividerHeight="1dp"
+            android:paddingBottom="72dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/txtKhongCoSanPham"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không tìm thấy món phù hợp"
+            android:textColor="@color/tch_chu_phu"
+            android:visibility="gone" />
+
+        <include
+            layout="@layout/layout_k_thanh_gio"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+    <include layout="@layout/layout_k_bottom_nav" />
+</LinearLayout>

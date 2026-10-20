@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khách: Trang chủ (tham khảo thecoffeehouse.com/homepage) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tch_nen"
+    android:orientation="vertical"
+    tools:context=".KhachTrangChuActivity">
+
+    <!-- Lời chào -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/txtAvatarTrangChu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_k_tron_cam"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="A" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtLoiChaoTrangChu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/tch_chu_phu"
+                android:textSize="12sp"
+                tools:text="Chào buổi sáng ☀" />
+
+            <TextView
+                android:id="@+id/txtTenTrangChu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/tch_chu"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="Nguyễn Minh Anh" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imgThongBaoKhach"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_k_tron_nhat"
+            android:contentDescription="Thông báo"
+            android:padding="9dp"
+            android:src="@drawable/ic_bell"
+            app:tint="@color/tch_cam" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <!-- 3 lối tắt chính -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="16dp">
+
+                <LinearLayout
+                    android:id="@+id/oDatBan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_k_the"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:contentDescription="Đặt bàn"
+                        android:src="@drawable/ic_table"
+                        app:tint="@color/tch_cam" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Đặt bàn"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/oGoiMon"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_k_the"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:contentDescription="Gọi món"
+                        android:src="@drawable/ic_coffee"
+                        app:tint="@color/tch_cam" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Gọi món"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/oDonCuaToi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_k_the"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:contentDescription="Đơn của tôi"
+                        android:src="@drawable/ic_receipt"
+                        app:tint="@color/tch_cam" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Đơn của tôi"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Lượt đặt bàn sắp tới -->
+            <LinearLayout
+                android:id="@+id/layoutDatBanSapToi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_k_the_cam"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_k_tron_cam"
+                    android:contentDescription="Lịch đặt bàn"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lịch đặt bàn sắp tới"
+                        android:textColor="@color/tch_cam_dam"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtDatBanSapToi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/tch_chu"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        tools:text="Bàn 06 • 19:00 21/10" />
+
+                    <TextView
+                        android:id="@+id/txtMaDatBanSapToi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/tch_chu_phu"
+                        android:textSize="12sp"
+                        tools:text="#DB-20261020-0001" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_k_pill_cam"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="Xem vé"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Banner -->
+            <LinearLayout
+                android:id="@+id/layoutBanner"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_k_banner"
+                android:orientation="horizontal"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_k_nen_tron_trang"
+                        android:paddingStart="10dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="3dp"
+                        android:text="MỚI"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:text="Đặt bàn trước,\nkhông lo hết chỗ"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_card"
+                        android:paddingStart="14dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="14dp"
+                        android:paddingBottom="6dp"
+                        android:text="Đặt ngay"
+                        android:textColor="@color/tch_cam"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center_vertical"
+                    android:alpha="0.9"
+                    android:contentDescription="Cà phê"
+                    android:src="@drawable/ic_coffee"
+                    app:tint="@color/white" />
+            </LinearLayout>
+
+            <!-- Danh mục -->
+            <TextView
+                style="@style/KTieuDeMuc"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:text="Danh mục" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutDanhMucTrangChu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- Món nổi bật -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    style="@style/KTieuDeMuc"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="Món nổi bật" />
+
+                <TextView
+                    android:id="@+id/txtXemTatCaMon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="Xem tất cả"
+                    android:textColor="@color/tch_cam"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="4dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layoutMonNoiBat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- Thông tin quán -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_k_banner_nau"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:drawableStart="@drawable/ic_time"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/caramel_soft"
+                    android:gravity="center_vertical"
+                    android:text="@string/gio_mo_cua"
+                    android:textColor="@color/caramel_soft"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:drawableStart="@drawable/ic_location"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/caramel_soft"
+                    android:gravity="center_vertical"
+                    android:text="@string/dia_chi_quan"
+                    android:textColor="@color/caramel_soft"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_k_bottom_nav" />
+</LinearLayout>
