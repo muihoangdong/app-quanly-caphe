@@ -12,7 +12,7 @@
 
     <include layout="@layout/layout_thanh_tieu_de" />
 
-    <!-- Danh sách món, phần đầu (thông tin bàn + thao tác) là header của ListView -->
+    <!-- Danh sách món -->
     <ListView
         android:id="@+id/lvGoiMon"
         android:layout_width="match_parent"
@@ -22,6 +22,7 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="10dp"
         android:paddingStart="16dp"
+        android:paddingTop="12dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
         android:scrollbars="none" />
@@ -56,27 +57,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_primary"
                 tools:text="214.000đ" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/TextNhan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Thuế VAT (8%)" />
-
-            <TextView
-                android:id="@+id/txtVat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
-                tools:text="+17.120đ" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton

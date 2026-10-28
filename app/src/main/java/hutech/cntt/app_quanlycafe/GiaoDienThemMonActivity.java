@@ -31,9 +31,7 @@ import hutech.cntt.app_quanlycafe.data.TienIch;
 import hutech.cntt.app_quanlycafe.model.DanhMuc;
 import hutech.cntt.app_quanlycafe.model.ThucUong;
 
-/**
- * Thêm món mới hoặc sửa / xóa món (extra "thucUongId").
- */
+
 public class GiaoDienThemMonActivity extends AppCompatActivity {
 
     ImageView imgAnhMon;
@@ -43,7 +41,7 @@ public class GiaoDienThemMonActivity extends AppCompatActivity {
     MaterialSwitch swConBan, swBanChay;
 
     CafeDatabase db;
-    ThucUong thucUongSua; // null = thêm mới
+    ThucUong thucUongSua;
     ArrayList<DanhMuc> arrDanhMuc = new ArrayList<>();
     ArrayAdapter<DanhMuc> adapterDanhMuc;
     String uriAnh = null;
@@ -55,7 +53,7 @@ public class GiaoDienThemMonActivity extends AppCompatActivity {
                         getContentResolver().takePersistableUriPermission(
                                 uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     } catch (SecurityException ignored) {
-                        // Một số nhà cung cấp ảnh không cho phép giữ quyền lâu dài.
+
                     }
                     uriAnh = uri.toString();
                     hienThiAnh();
@@ -65,6 +63,7 @@ public class GiaoDienThemMonActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!DieuHuong.chiQuanLy(this)) return;
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_giao_dien_them_mon);
         DieuHuong.apDungInsets(this);

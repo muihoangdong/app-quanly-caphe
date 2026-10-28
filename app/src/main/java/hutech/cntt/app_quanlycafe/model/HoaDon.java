@@ -5,9 +5,12 @@ public class HoaDon {
     public static final int DA_THANH_TOAN = 1;
     public static final int DA_HUY = 2;
 
-    /** Phương thức thanh toán: mã lưu trong MySQL (Invoices.payment_method) và tên hiển thị. */
-    public static final String[] MA_PHUONG_THUC = {"BANK_QR", "CASH", "CARD", "E_WALLET"};
-    public static final String[] TEN_PHUONG_THUC = {"VietQR", "Tiền mặt", "Quẹt POS", "Ví MoMo/Zalo"};
+
+    public static final String TIEN_MAT = "Tiền mặt";
+    public static final String CHUYEN_KHOAN = "Chuyển khoản";
+
+    public static final String[] MA_PHUONG_THUC = {"CASH", "BANK_TRANSFER", "BANK_QR", "CARD", "E_WALLET"};
+    public static final String[] TEN_PHUONG_THUC = {TIEN_MAT, CHUYEN_KHOAN, "VietQR", "Quẹt POS", "Ví MoMo"};
 
     public static String tenPhuongThuc(String ma) {
         for (int i = 0; i < MA_PHUONG_THUC.length; i++) {
@@ -34,11 +37,11 @@ public class HoaDon {
     private int trangThai;
     private long tamTinh;
     private long giamGia;
-    private long vat;
     private long tongTien;
     private String phuongThuc;
     private long khachDua;
     private int soMon;
+    private String tenNhanVien;
 
     public HoaDon() {
     }
@@ -49,7 +52,6 @@ public class HoaDon {
     public String getMaHoaDon() { return maHoaDon; }
     public void setMaHoaDon(String maHoaDon) { this.maHoaDon = maHoaDon; }
 
-    public int getBanId() { return banId; }
     public void setBanId(int banId) { this.banId = banId; }
 
     public String getTenBan() { return tenBan; }
@@ -76,9 +78,6 @@ public class HoaDon {
     public long getGiamGia() { return giamGia; }
     public void setGiamGia(long giamGia) { this.giamGia = giamGia; }
 
-    public long getVat() { return vat; }
-    public void setVat(long vat) { this.vat = vat; }
-
     public long getTongTien() { return tongTien; }
     public void setTongTien(long tongTien) { this.tongTien = tongTien; }
 
@@ -90,4 +89,11 @@ public class HoaDon {
 
     public int getSoMon() { return soMon; }
     public void setSoMon(int soMon) { this.soMon = soMon; }
+
+    public String getTenNhanVien() { return tenNhanVien; }
+    public void setTenNhanVien(String tenNhanVien) { this.tenNhanVien = tenNhanVien; }
+
+    public boolean isLuotKhach() {
+        return banId == 0;
+    }
 }

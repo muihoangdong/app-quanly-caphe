@@ -86,7 +86,7 @@ public class GoiMonAdapter extends BaseAdapter {
         }
 
         ChiTietHoaDon ct = listMon.get(position);
-        TienIch.hienThiAnhMon(holder.imgMon, ct.getUriAnh(), ct.getDanhMuc());
+        TienIch.hienThiAnhMon(holder.imgMon, ct.getUriAnh(), ct.getTenMon(), ct.getDanhMuc());
         holder.txtTen.setText(String.format(Locale.getDefault(), "%02d • %s", ct.getSoLuong(), ct.getTenMon()));
         holder.txtThanhTien.setText(TienIch.tien(ct.getThanhTien()));
 

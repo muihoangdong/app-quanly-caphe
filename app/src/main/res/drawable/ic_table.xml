@@ -1,10 +1,63 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:tint="@color/espresso"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M2,6h20v3H2zM5,9h2.5v11H5zM16.5,9H19v11h-2.5zM7.5,12.5h9v2h-9z" />
+    android:viewportWidth="840"
+    android:viewportHeight="840">
+
+    <!-- Toạ độ vẽ theo khung 1024, dời vào giữa khung 840 -->
+    <group
+        android:translateX="-92"
+        android:translateY="-91">
+
+        <!-- Mặt bàn hình thang -->
+        <path
+            android:fillColor="#176B45"
+            android:pathData="M350,386 L674,386 Q684,386 690,394 L712,424 Q726,458 698,458
+                L326,458 Q298,458 312,424 L334,394 Q340,386 350,386 Z" />
+
+        <!-- Chân bàn -->
+        <path
+            android:fillColor="#176B45"
+            android:pathData="M492,450 L532,450 L532,660 L492,660 Z" />
+
+        <!-- Đế bàn -->
+        <path
+            android:pathData="M445,670 L580,670"
+            android:strokeWidth="40"
+            android:strokeColor="#176B45"
+            android:strokeLineCap="round" />
+
+        <!-- Ghế bên trái -->
+        <group>
+            <path
+                android:pathData="M161,358 L212,530 M212,536 L365,536"
+                android:strokeWidth="54"
+                android:strokeColor="#176B45"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:pathData="M210,560 L183,678 M352,560 L378,678"
+                android:strokeWidth="26"
+                android:strokeColor="#176B45"
+                android:strokeLineCap="round" />
+        </group>
+
+        <!-- Ghế bên phải: lật gương ghế trái quanh trục giữa -->
+        <group
+            android:pivotX="512"
+            android:scaleX="-1">
+            <path
+                android:pathData="M161,358 L212,530 M212,536 L365,536"
+                android:strokeWidth="54"
+                android:strokeColor="#176B45"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:pathData="M210,560 L183,678 M352,560 L378,678"
+                android:strokeWidth="26"
+                android:strokeColor="#176B45"
+                android:strokeLineCap="round" />
+        </group>
+    </group>
+
 </vector>

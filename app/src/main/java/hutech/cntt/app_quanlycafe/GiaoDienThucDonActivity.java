@@ -3,14 +3,15 @@ package hutech.cntt.app_quanlycafe;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -21,6 +22,9 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,19 +34,15 @@ import hutech.cntt.app_quanlycafe.data.CafeDatabase;
 import hutech.cntt.app_quanlycafe.data.ChayNen;
 import hutech.cntt.app_quanlycafe.data.DieuHuong;
 import hutech.cntt.app_quanlycafe.data.TienIch;
+import hutech.cntt.app_quanlycafe.model.Ban;
 import hutech.cntt.app_quanlycafe.model.ChiTietHoaDon;
 import hutech.cntt.app_quanlycafe.model.DanhMuc;
 import hutech.cntt.app_quanlycafe.model.HoaDon;
 import hutech.cntt.app_quanlycafe.model.ThucUong;
 
-/**
- * Màn hình thực đơn, có 2 chế độ:
- * - Gọi món (có extra "hoaDonId"): chọn món + số lượng vào giỏ rồi "Gửi Bar".
- * - Quản lý thực đơn (mở từ thanh điều hướng): thêm / sửa / xóa thức uống và danh mục.
- */
+
 public class GiaoDienThucDonActivity extends AppCompatActivity {
 
-    /** Một dòng trong giỏ hàng. */
     static class DongGio {
         ThucUong thucUong;
         int soLuong;
@@ -55,74 +55,89 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
         }
     }
 
-    GridView gvThucUong;
+    ListView lvThucUong;
     RadioGroup rgDanhMuc;
     EditText edtTimKiem;
     TextView txtKhongCoMon, txtTongSoMon;
     LinearLayout layoutGioHang;
-    TextView txtSoLuongGio, txtTieuDeGio, txtTongGio;
+    TextView txtSoLuongGio, txtTongGio;
 
     CafeDatabase db;
     ArrayList<ThucUong> listThucUong;
     ThucUongAdapter adapter;
     ArrayList<DanhMuc> dsDanhMuc = new ArrayList<>();
 
-    boolean cheDoGoiMon;
-    boolean moGoiMonSauKhiGui;
-    int hoaDonId;
-    HoaDon hoaDon;
-    int danhMucDangChon = 0; // 0 = tất cả
-    int lanTai = 0;          // bỏ qua kết quả tìm kiếm cũ trả về muộn
+    boolean cheDoQuanLy;
+    int hoaDonId;     // > 0: gọi thêm vào đơn này
+    int banId;        // > 0: tạo đơn cho bàn này
+    String tenBan;
+    int danhMucDangChon = 0;
+    int lanTai = 0;
 
-    // Khóa: thucUongId + "|" + ghiChu
+    // Bàn đã chọn trong giỏ hàng (mục Thực đơn): null = chưa chọn, id 0 = mang đi / tại quầy
+    Ban banChon;
+    int soKhach = 1;
+    boolean dangGui;
+
     final LinkedHashMap<String, DongGio> gioHang = new LinkedHashMap<>();
     final HashMap<Integer, Integer> soLuongTheoMon = new HashMap<>();
+
+    protected boolean laQuanLy() {
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (laQuanLy() && !DieuHuong.chiQuanLy(this)) return;
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_giao_dien_thuc_don);
         DieuHuong.apDungInsets(this);
 
         db = CafeDatabase.getInstance(this);
 
-        gvThucUong = findViewById(R.id.gvThucUong);
+        lvThucUong = findViewById(R.id.lvThucUong);
         rgDanhMuc = findViewById(R.id.rgDanhMuc);
         edtTimKiem = findViewById(R.id.edtTimKiem);
         txtKhongCoMon = findViewById(R.id.txtKhongCoMon);
         txtTongSoMon = findViewById(R.id.txtTongSoMon);
         layoutGioHang = findViewById(R.id.layoutGioHang);
         txtSoLuongGio = findViewById(R.id.txtSoLuongGio);
-        txtTieuDeGio = findViewById(R.id.txtTieuDeGio);
         txtTongGio = findViewById(R.id.txtTongGio);
 
+        cheDoQuanLy = laQuanLy();
         hoaDonId = getIntent().getIntExtra("hoaDonId", 0);
-        moGoiMonSauKhiGui = getIntent().getBooleanExtra("moGoiMonSauKhiGui", false);
-        cheDoGoiMon = hoaDonId > 0;
+        banId = getIntent().getIntExtra("banId", 0);
+        tenBan = getIntent().getStringExtra("tenBan");
+        if (banId > 0) {
+            Ban b = new Ban(banId, tenBan, "", getIntent().getIntExtra("soCho", 4), Ban.TRONG);
+            banChon = b;
+        }
 
-        if (cheDoGoiMon) {
-            ganCheDoGoiMon();
-        } else {
+        if (cheDoQuanLy) {
             ganCheDoQuanLy();
+        } else {
+            ganCheDoGoiMon();
         }
 
         listThucUong = new ArrayList<>();
-        adapter = new ThucUongAdapter(this, listThucUong, cheDoGoiMon, soLuongTheoMon, tu -> {
-            if (cheDoGoiMon) {
+        adapter = new ThucUongAdapter(this, listThucUong, !cheDoQuanLy, soLuongTheoMon, tu -> {
+            if (cheDoQuanLy) {
+                moManHinhSuaMon(tu);
+            } else if (!tu.isConBan()) {
+                Toast.makeText(this, tu.getTenMon() + " đang tạm hết", Toast.LENGTH_SHORT).show();
+            } else {
                 themVaoGio(tu, 1, "");
-            } else {
-                moManHinhSuaMon(tu);
             }
-        });
-        gvThucUong.setAdapter(adapter);
+        }, this::botKhoiGio);
+        lvThucUong.setAdapter(adapter);
 
-        gvThucUong.setOnItemClickListener((parent, view, position, id) -> {
+        lvThucUong.setOnItemClickListener((parent, view, position, id) -> {
             ThucUong tu = listThucUong.get(position);
-            if (cheDoGoiMon) {
-                hienThiTuyChonMon(tu);
-            } else {
+            if (cheDoQuanLy) {
                 moManHinhSuaMon(tu);
+            } else if (tu.isConBan()) {
+                hienThiTuyChonMon(tu);
             }
         });
 
@@ -140,37 +155,32 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-
-        findViewById(R.id.imgThongBao).setOnClickListener(v ->
-                Toast.makeText(this, "Không có thông báo mới", Toast.LENGTH_SHORT).show());
     }
 
     private void ganCheDoGoiMon() {
-        findViewById(R.id.layoutQuanLyMon).setVisibility(View.GONE);
-        findViewById(R.id.layoutBanDangGoi).setVisibility(View.VISIBLE);
-        findViewById(R.id.bottomNav).setVisibility(View.GONE);
-        DieuHuong.ganThanhDieuHuong(this, R.id.nav_thuc_don);
-
-        // Thông tin bàn đang gọi món
-        ChayNen.chay(this, () -> db.layHoaDon(hoaDonId), hd -> {
-            if (hd.getTrangThai() != HoaDon.DANG_PHUC_VU) {
-                Toast.makeText(this, "Order đã đóng", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
-            hoaDon = hd;
-            ((TextView) findViewById(R.id.txtBanDangGoi)).setText(hd.getTenBan() + " • " + hd.getKhuVuc());
-            ((TextView) findViewById(R.id.txtSoKhachDangGoi)).setText(hd.getSoKhach() + " khách");
-            ((TextView) findViewById(R.id.txtGioVaoDangGoi)).setText(
-                    "● Đang phục vụ • Bắt đầu lúc " + TienIch.gio(hd.getGioVao()));
-            txtTieuDeGio.setText("GIỎ HÀNG " + hd.getTenBan().toUpperCase());
+        boolean tuThanhDieuHuong = hoaDonId == 0 && banId == 0;
+        String tieuDe = hoaDonId > 0 ? "Gọi thêm món" : banId > 0 ? "Gọi món • " + tenBan : "Gọi món";
+        DieuHuong.ganThanhTieuDe(this, tieuDe, tuThanhDieuHuong);
+        DieuHuong.ganNutTieuDe(this, 1, R.drawable.ic_search, "Tìm món", v -> {
+            edtTimKiem.requestFocus();
+            ((android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                    .showSoftInput(edtTimKiem, 0);
         });
-
-        findViewById(R.id.btnXemOrder).setOnClickListener(v -> {
-            if (moGoiMonSauKhiGui) ThaoTacBan.moChiTietOrder(this, hoaDonId);
-            finish();
-        });
-        findViewById(R.id.btnGuiBar).setOnClickListener(v -> guiBar());
+        if (tuThanhDieuHuong) {
+            DieuHuong.ganThanhDieuHuong(this, R.id.nav_thuc_don);
+        } else {
+            findViewById(R.id.bottomNav).setVisibility(View.GONE);
+        }
+        if (hoaDonId > 0) {
+            ChayNen.chay(this, () -> db.layHoaDon(hoaDonId), hd -> {
+                if (hd.getTrangThai() != HoaDon.DANG_PHUC_VU) {
+                    Toast.makeText(this, "Đơn đã đóng", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+                ((TextView) findViewById(R.id.txtTieuDeManHinh)).setText("Gọi thêm • " + hd.getTenBan());
+            });
+        }
         findViewById(R.id.btnXemGio).setOnClickListener(v -> hienThiGioHang());
 
         // Hỏi lại trước khi thoát nếu giỏ còn món chưa gửi
@@ -184,19 +194,24 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
                 }
                 new AlertDialog.Builder(GiaoDienThucDonActivity.this)
                         .setTitle("Bỏ giỏ hàng?")
-                        .setMessage("Các món trong giỏ chưa được gửi xuống quầy Bar.")
+                        .setMessage("Các món trong giỏ chưa được tạo đơn.")
                         .setNegativeButton("Ở lại", null)
-                        .setPositiveButton("Bỏ giỏ", (d, w) -> finish())
+                        .setPositiveButton("Bỏ giỏ", (d, w) -> {
+                            gioHang.clear();
+                            capNhatGioHang();
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                        })
                         .show();
             }
         });
     }
 
     private void ganCheDoQuanLy() {
-        findViewById(R.id.layoutQuanLyMon).setVisibility(View.VISIBLE);
-        findViewById(R.id.layoutBanDangGoi).setVisibility(View.GONE);
-        DieuHuong.ganThanhDieuHuong(this, R.id.nav_thuc_don);
-        findViewById(R.id.btnThemMonMoi).setOnClickListener(v -> {
+        DieuHuong.ganThanhTieuDe(this, "Thực đơn", false);
+        findViewById(R.id.bottomNav).setVisibility(View.GONE);
+        txtTongSoMon.setVisibility(View.VISIBLE);
+        DieuHuong.ganNutTieuDe(this, 1, R.drawable.ic_add, "Thêm món", v -> {
             if (dsDanhMuc.isEmpty()) {
                 Toast.makeText(this, "Hãy tạo danh mục trước khi thêm món", Toast.LENGTH_LONG).show();
                 nhapTenDanhMuc(null);
@@ -204,7 +219,7 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
             }
             startActivity(new Intent(this, GiaoDienThemMonActivity.class));
         });
-        findViewById(R.id.btnDanhMuc).setOnClickListener(v -> hienThiQuanLyDanhMuc());
+        DieuHuong.ganNutTieuDe(this, 2, R.drawable.ic_category, "Danh mục", v -> hienThiQuanLyDanhMuc());
     }
 
     @Override
@@ -214,7 +229,7 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
         taiThucUong();
     }
 
-    // ---------------- Danh mục ----------------
+    //DANH MỤC
 
     private void taiDanhMuc() {
         ChayNen.chay(this, db::layDanhSachDanhMuc, ds -> {
@@ -266,7 +281,7 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
             dong[i + 1] = dm.getTen() + "  (" + dm.getSoMon() + " món)";
         }
         new AlertDialog.Builder(this)
-                .setTitle("Danh mục thức uống")
+                .setTitle("Danh mục")
                 .setItems(dong, (d, which) -> {
                     if (which == 0) {
                         nhapTenDanhMuc(null);
@@ -288,10 +303,8 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
                 .show();
     }
 
-    /** dmCu = null: thêm mới; khác null: đổi tên. */
     private void nhapTenDanhMuc(DanhMuc dmCu) {
         EditText edt = new EditText(this);
-        edt.setHint("VD: Cà phê, Trà trái cây, Bánh ngọt...");
         if (dmCu != null) {
             edt.setText(dmCu.getTen());
             edt.setSelection(dmCu.getTen().length());
@@ -345,21 +358,21 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
                 .show();
     }
 
-    // ---------------- Thức uống ----------------
+    //THỨC UỐNG
 
     private void taiThucUong() {
         int lan = ++lanTai;
         int danhMuc = danhMucDangChon;
         String tuKhoa = edtTimKiem.getText().toString();
-        ChayNen.chay(this, () -> db.layDanhSachThucUong(danhMuc, tuKhoa, cheDoGoiMon), ds -> {
+        ChayNen.chay(this, () -> db.layDanhSachThucUong(danhMuc, tuKhoa), ds -> {
             if (lan != lanTai) return;
             listThucUong.clear();
             listThucUong.addAll(ds);
             adapter.notifyDataSetChanged();
+            txtKhongCoMon.setText(dsDanhMuc.isEmpty() && tuKhoa.trim().isEmpty() && cheDoQuanLy
+                    ? "Chưa có món nào.\nBấm dấu + phía trên để thêm món." : "Không tìm thấy món phù hợp");
             txtKhongCoMon.setVisibility(listThucUong.isEmpty() ? View.VISIBLE : View.GONE);
-            if (!cheDoGoiMon) {
-                txtTongSoMon.setText(listThucUong.size() + " món • chạm vào món để sửa");
-            }
+            if (cheDoQuanLy) txtTongSoMon.setText(listThucUong.size() + " món • chạm để sửa");
         });
     }
 
@@ -369,7 +382,7 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
         startActivity(in);
     }
 
-    // ---------------- Giỏ hàng (chế độ gọi món) ----------------
+    //GIỎ HÀNG
 
     private void themVaoGio(ThucUong tu, int soLuong, String ghiChu) {
         String khoa = tu.getId() + "|" + ghiChu;
@@ -382,19 +395,41 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
         capNhatGioHang();
     }
 
+
+    private void botKhoiGio(ThucUong tu) {
+        String khoaCuoi = null;
+        for (String khoa : gioHang.keySet()) {
+            if (gioHang.get(khoa).thucUong.getId() == tu.getId()) khoaCuoi = khoa;
+        }
+        if (khoaCuoi == null) return;
+        DongGio dong = gioHang.get(khoaCuoi);
+        dong.soLuong--;
+        if (dong.soLuong <= 0) gioHang.remove(khoaCuoi);
+        capNhatGioHang();
+    }
+
+    private int tongSoLuongGio() {
+        int tong = 0;
+        for (DongGio d : gioHang.values()) tong += d.soLuong;
+        return tong;
+    }
+
+    private long tongTienGio() {
+        long tong = 0;
+        for (DongGio d : gioHang.values()) tong += d.soLuong * d.thucUong.getGia();
+        return tong;
+    }
+
     private void capNhatGioHang() {
         soLuongTheoMon.clear();
-        int tongSoLuong = 0;
-        long tongTien = 0;
         for (DongGio d : gioHang.values()) {
             Integer cu = soLuongTheoMon.get(d.thucUong.getId());
             soLuongTheoMon.put(d.thucUong.getId(), (cu == null ? 0 : cu) + d.soLuong);
-            tongSoLuong += d.soLuong;
-            tongTien += d.soLuong * d.thucUong.getGia();
         }
+        int tongSoLuong = tongSoLuongGio();
         layoutGioHang.setVisibility(tongSoLuong > 0 ? View.VISIBLE : View.GONE);
-        txtSoLuongGio.setText(String.valueOf(tongSoLuong));
-        txtTongGio.setText(TienIch.tien(tongTien));
+        txtSoLuongGio.setText(tongSoLuong + " món");
+        txtTongGio.setText(TienIch.tien(tongTienGio()));
         adapter.notifyDataSetChanged();
     }
 
@@ -402,7 +437,7 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.dialog_tuy_chon_mon, null);
         ImageView img = view.findViewById(R.id.imgMonTuyChon);
         img.setClipToOutline(true);
-        TienIch.hienThiAnhMon(img, tu.getUriAnh(), tu.getDanhMuc());
+        TienIch.hienThiAnhMon(img, tu.getUriAnh(), tu.getTenMon(), tu.getDanhMuc());
         ((TextView) view.findViewById(R.id.txtMoTaTuyChon)).setText(tu.getMoTa());
         ((TextView) view.findViewById(R.id.txtGiaTuyChon)).setText(TienIch.tien(tu.getGia()));
 
@@ -440,61 +475,171 @@ public class GiaoDienThucDonActivity extends AppCompatActivity {
                     }
                     String khac = edtGhiChu.getText().toString().trim();
                     if (!khac.isEmpty()) ghiChu.add(khac);
-                    themVaoGio(tu, soLuong[0], android.text.TextUtils.join(" • ", ghiChu));
+                    themVaoGio(tu, soLuong[0], TextUtils.join(" • ", ghiChu));
                 })
                 .show();
     }
 
     private void hienThiGioHang() {
-        ArrayList<String> khoa = new ArrayList<>(gioHang.keySet());
-        String[] dong = new String[khoa.size()];
-        for (int i = 0; i < khoa.size(); i++) {
-            DongGio d = gioHang.get(khoa.get(i));
-            dong[i] = d.soLuong + " × " + d.thucUong.getTenMon()
-                    + (d.ghiChu.isEmpty() ? "" : " (" + d.ghiChu + ")")
-                    + "  —  " + TienIch.tien(d.soLuong * d.thucUong.getGia());
+        if (gioHang.isEmpty()) return;
+        BottomSheetDialog sheet = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_gio_hang, null);
+        sheet.setContentView(view);
+
+        LinearLayout layoutDong = view.findViewById(R.id.layoutDongGio);
+        TextView txtSoMon = view.findViewById(R.id.txtSoMonGio);
+        TextView txtTongTien = view.findViewById(R.id.txtTongTienGio);
+        TextView txtBan = view.findViewById(R.id.txtBanDaChon);
+        TextView txtSoKhach = view.findViewById(R.id.txtSoKhachGio);
+        EditText edtTenKhach = view.findViewById(R.id.edtTenKhachGio);
+        View layoutChonBan = view.findViewById(R.id.layoutChonBan);
+        MaterialButton btnTaoDon = view.findViewById(R.id.btnTaoDon);
+
+        Runnable veLai = new Runnable() {
+            @Override
+            public void run() {
+                if (gioHang.isEmpty()) {
+                    sheet.dismiss();
+                    return;
+                }
+                layoutDong.removeAllViews();
+                for (String khoa : new ArrayList<>(gioHang.keySet())) {
+                    DongGio d = gioHang.get(khoa);
+                    View dong = getLayoutInflater().inflate(R.layout.item_gio_hang, layoutDong, false);
+                    ImageView img = dong.findViewById(R.id.imgMonGio);
+                    img.setClipToOutline(true);
+                    TienIch.hienThiAnhMon(img, d.thucUong.getUriAnh(), d.thucUong.getTenMon(), d.thucUong.getDanhMuc());
+                    ((TextView) dong.findViewById(R.id.txtTenMonGio)).setText(d.thucUong.getTenMon());
+                    ((TextView) dong.findViewById(R.id.txtGiaMonGio)).setText(TienIch.tien(d.thucUong.getGia())
+                            + (d.ghiChu.isEmpty() ? "" : " • " + d.ghiChu));
+                    ((TextView) dong.findViewById(R.id.txtSoLuongMonGio)).setText(String.valueOf(d.soLuong));
+                    Runnable self = this;
+                    dong.findViewById(R.id.btnBotMon).setOnClickListener(v -> {
+                        d.soLuong--;
+                        if (d.soLuong <= 0) gioHang.remove(khoa);
+                        capNhatGioHang();
+                        self.run();
+                    });
+                    dong.findViewById(R.id.btnThemMonGio).setOnClickListener(v -> {
+                        d.soLuong++;
+                        capNhatGioHang();
+                        self.run();
+                    });
+                    layoutDong.addView(dong);
+                }
+                txtSoMon.setText("Tổng cộng (" + tongSoLuongGio() + " món)");
+                txtTongTien.setText(TienIch.tien(tongTienGio()));
+                txtSoKhach.setText(String.valueOf(soKhach));
+                if (hoaDonId > 0) return;
+                if (banChon == null) {
+                    txtBan.setText("Chọn bàn");
+                    txtBan.setTextColor(getColor(R.color.mint_accent));
+                } else {
+                    txtBan.setText(banChon.getId() == 0 ? "Mang đi / tại quầy" : banChon.getTenBan());
+                    txtBan.setTextColor(getColor(R.color.forest_green));
+                }
+                edtTenKhach.setVisibility(banChon != null && banChon.getId() == 0 ? View.VISIBLE : View.GONE);
+            }
+        };
+
+        if (hoaDonId > 0) {
+            // Gọi thêm vào đơn có sẵn: không cần chọn bàn / số khách
+            layoutChonBan.setVisibility(View.GONE);
+            view.findViewById(R.id.layoutSoKhachGio).setVisibility(View.GONE);
+            btnTaoDon.setText("Gửi thêm vào đơn");
+        } else if (banId > 0) {
+            layoutChonBan.setClickable(false);
+            view.findViewById(R.id.imgChonBan).setVisibility(View.GONE);
+        } else {
+            layoutChonBan.setOnClickListener(v -> chonBan(veLai));
         }
-        new AlertDialog.Builder(this)
-                .setTitle("Giỏ hàng • chạm để bớt 1")
-                .setItems(dong, (dialog, i) -> {
-                    DongGio d = gioHang.get(khoa.get(i));
-                    d.soLuong--;
-                    if (d.soLuong <= 0) gioHang.remove(khoa.get(i));
-                    capNhatGioHang();
-                    if (!gioHang.isEmpty()) hienThiGioHang();
-                })
-                .setNeutralButton("Xóa giỏ", (d, w) -> {
-                    gioHang.clear();
-                    capNhatGioHang();
-                })
-                .setPositiveButton("Đóng", null)
-                .show();
+        view.findViewById(R.id.btnGiamKhachGio).setOnClickListener(v -> {
+            if (soKhach > 1) soKhach--;
+            veLai.run();
+        });
+        view.findViewById(R.id.btnTangKhachGio).setOnClickListener(v -> {
+            if (soKhach < 99) soKhach++;
+            veLai.run();
+        });
+        view.findViewById(R.id.btnXoaGio).setOnClickListener(v -> {
+            gioHang.clear();
+            capNhatGioHang();
+            sheet.dismiss();
+        });
+        btnTaoDon.setOnClickListener(v -> {
+            if (hoaDonId == 0 && banChon == null) {
+                chonBan(veLai);
+                return;
+            }
+            guiDon(sheet, btnTaoDon, edtTenKhach.getText().toString());
+        });
+        veLai.run();
+        sheet.show();
     }
 
-    private void guiBar() {
-        if (gioHang.isEmpty()) return;
+    private void chonBan(Runnable sauKhiChon) {
+        ChayNen.chay(this, () -> db.layDanhSachBan(), dsBan -> {
+            ArrayList<Ban> chon = new ArrayList<>();
+            ArrayList<String> ten = new ArrayList<>();
+            chon.add(new Ban(0, "Mang đi / tại quầy", "", 0, Ban.TRONG));
+            ten.add("Mang đi / tại quầy");
+            for (Ban b : dsBan) {
+                if (!b.isTrong()) continue;
+                chon.add(b);
+                ten.add(b.getTenBan() + " • " + b.getKhuVuc()
+                        + (b.getTrangThai() == Ban.DA_DAT ? " (đặt trước)" : ""));
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle("Phục vụ tại")
+                    .setItems(ten.toArray(new String[0]), (d, i) -> {
+                        banChon = chon.get(i);
+                        sauKhiChon.run();
+                    })
+                    .setNegativeButton("Đóng", null)
+                    .show();
+        });
+    }
+
+    private void guiDon(BottomSheetDialog sheet, MaterialButton nut, String tenKhach) {
+        if (gioHang.isEmpty() || dangGui) return;
         ArrayList<ChiTietHoaDon> dsMon = new ArrayList<>();
-        int tong = 0;
         for (DongGio d : gioHang.values()) {
             ChiTietHoaDon ct = new ChiTietHoaDon();
             ct.setThucUongId(d.thucUong.getId());
             ct.setSoLuong(d.soLuong);
             ct.setGhiChu(d.ghiChu);
             dsMon.add(ct);
-            tong += d.soLuong;
         }
-        int tongMon = tong;
-        findViewById(R.id.btnGuiBar).setEnabled(false);
+        int tongMon = tongSoLuongGio();
+        dangGui = true;
+        nut.setEnabled(false);
         ChayNen.chay(this, () -> {
-            db.themMonVaoHoaDon(hoaDonId, dsMon);
-            return true;
-        }, ok -> {
+            if (hoaDonId > 0) {
+                db.themMonVaoHoaDon(hoaDonId, dsMon);
+                return hoaDonId;
+            }
+            return db.taoDonHang(banChon.getId(), soKhach, tenKhach, dsMon);
+        }, idDon -> {
+            dangGui = false;
             gioHang.clear();
-            Toast.makeText(this, "Đã gửi " + tongMon + " món xuống quầy Bar", Toast.LENGTH_SHORT).show();
-            if (moGoiMonSauKhiGui) ThaoTacBan.moChiTietOrder(this, hoaDonId);
-            finish();
+            capNhatGioHang();
+            sheet.dismiss();
+            if (hoaDonId > 0) {
+                Toast.makeText(this, "Đã thêm " + tongMon + " món vào đơn", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            Toast.makeText(this, "Đã tạo đơn " + (banChon.getId() == 0 ? "mang đi" : banChon.getTenBan()),
+                    Toast.LENGTH_SHORT).show();
+            if (banId == 0) {
+                banChon = null;
+                soKhach = 1;
+            }
+            ThaoTacBan.moThanhToan(this, idDon);
+            if (banId > 0) finish();
         }, loi -> {
-            findViewById(R.id.btnGuiBar).setEnabled(true);
+            dangGui = false;
+            nut.setEnabled(true);
             Toast.makeText(this, loi, Toast.LENGTH_LONG).show();
         });
     }

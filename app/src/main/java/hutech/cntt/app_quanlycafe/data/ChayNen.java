@@ -8,14 +8,7 @@ import android.widget.Toast;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Chạy lệnh đọc / ghi MySQL ở luồng nền rồi trả kết quả về luồng giao diện.
- * Android không cho gọi mạng trên luồng giao diện (NetworkOnMainThreadException).
- *
- * <pre>
- * ChayNen.chay(this, () -> db.layDanhSachBan(null), ds -> hienThi(ds));
- * </pre>
- */
+
 public class ChayNen {
 
     public interface Viec<T> {
@@ -33,7 +26,6 @@ public class ChayNen {
     private static final ExecutorService LUONG_NEN = Executors.newFixedThreadPool(2);
     private static final Handler LUONG_GIAO_DIEN = new Handler(Looper.getMainLooper());
 
-    /** Lỗi được hiện bằng Toast. */
     public static <T> void chay(Activity activity, Viec<T> viec, KetQua<T> ketQua) {
         chay(activity, viec, ketQua, thongBao -> Toast.makeText(activity, thongBao, Toast.LENGTH_LONG).show());
     }

@@ -192,12 +192,11 @@
 
         <TextView
             style="@style/TextNhapLieu"
-            android:text="Ghi chú cho quầy Bar" />
+            android:text="Ghi chú cho pha chế" />
 
         <EditText
             android:id="@+id/edtGhiChuMon"
             style="@style/ONhapLieu"
-            android:hint="VD: thêm kem cheese, mang về..."
             android:inputType="textCapSentences" />
     </LinearLayout>
 </ScrollView>

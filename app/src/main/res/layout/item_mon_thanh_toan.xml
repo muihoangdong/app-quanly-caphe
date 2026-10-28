@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một món trong "Thông tin đơn hàng" ở màn hình Thanh toán -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <ImageView
+        android:id="@+id/imgMonTT"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:background="@drawable/bg_icon_mint"
+        android:contentDescription="Ảnh món"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/img_mon_ca_phe_sua" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenMonTT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Cà phê sữa" />
+
+        <TextView
+            android:id="@+id/txtSoLuongMonTT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="1 x 40.000đ" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtThanhTienMonTT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="40.000đ" />
+</LinearLayout>

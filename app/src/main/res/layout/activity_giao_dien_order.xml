@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Đơn hàng: các đơn đang phục vụ, chạm để thanh toán -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/canvas"
+    android:orientation="vertical"
+    tools:context=".GiaoDienOrderActivity">
+
+    <include layout="@layout/layout_thanh_tieu_de" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnTaoOrder"
+        style="@style/NutChinh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:text="Tạo đơn hàng"
+        app:backgroundTint="@color/mint_accent"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textStart" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvOrder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:padding="16dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/txtKhongCoOrder"
+            style="@style/TextNhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="Chưa có đơn nào đang phục vụ.\nBấm &quot;Tạo đơn hàng&quot; để gọi món."
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <include layout="@layout/layout_bottom_nav" />
+</LinearLayout>

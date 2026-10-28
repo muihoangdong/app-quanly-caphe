@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quản lý (mục Khác): thực đơn & tài khoản nhân viên (quản lý), lịch sử hóa đơn, đổi mật khẩu, đăng xuất -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/canvas"
+    android:orientation="vertical"
+    tools:context=".GiaoDienCaiDatActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Quản lý"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/forest_green" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:text="Quản lý"
+            android:textColor="@color/forest_green"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="20dp">
+
+            <include
+                android:id="@+id/dongThucDon"
+                layout="@layout/item_the_quan_ly" />
+
+            <include
+                android:id="@+id/dongTaiKhoan"
+                layout="@layout/item_the_quan_ly" />
+
+            <include
+                android:id="@+id/dongLichSuHoaDon"
+                layout="@layout/item_the_quan_ly" />
+
+            <include
+                android:id="@+id/dongDoiMatKhau"
+                layout="@layout/item_the_quan_ly" />
+
+            <include
+                android:id="@+id/dongDangXuat"
+                layout="@layout/item_the_quan_ly" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_nav" />
+</LinearLayout>

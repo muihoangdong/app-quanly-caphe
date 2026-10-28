@@ -7,13 +7,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Kết nối thẳng tới MySQL (chạy bằng Docker trên máy tính) qua JDBC.
- * Android không cho kết nối mạng trên luồng giao diện nên luôn gọi qua {@link ChayNen}.
- */
 public class KetNoiMySQL {
 
-    /** Gradle tự chạy "adb reverse tcp:3307 tcp:3307" khi build nên thiết bị nối 127.0.0.1:3307 là tới máy tính. */
     public static final String DIA_CHI_MAC_DINH = "127.0.0.1:3307";
 
     private static final String TEN_CSDL = "quanlycafe";
@@ -24,7 +19,6 @@ public class KetNoiMySQL {
     private static final String TEN_FILE = "cai_dat";
     private static final String KHOA_DIA_CHI = "dia_chi_mysql";
 
-    /** Lỗi khi làm việc với CSDL (thông báo đã là tiếng Việt, hiển thị thẳng cho người dùng). */
     public static class LoiCSDL extends Exception {
         public LoiCSDL(String thongBao) {
             super(thongBao);
@@ -45,7 +39,6 @@ public class KetNoiMySQL {
         this.context = context.getApplicationContext();
     }
 
-    /** Địa chỉ dạng host:cổng, VD 127.0.0.1:3307 hoặc 192.168.1.5:3307. */
     public String layDiaChi() {
         return context.getSharedPreferences(TEN_FILE, Context.MODE_PRIVATE)
                 .getString(KHOA_DIA_CHI, DIA_CHI_MAC_DINH);
@@ -58,7 +51,6 @@ public class KetNoiMySQL {
         context.getSharedPreferences(TEN_FILE, Context.MODE_PRIVATE).edit().putString(KHOA_DIA_CHI, s).apply();
     }
 
-    /** Mở một kết nối mới, nhớ đóng sau khi dùng (try-with-resources). */
     public Connection moKetNoi() throws LoiCSDL {
         String url = "jdbc:mysql://" + layDiaChi() + "/" + TEN_CSDL
                 + "?useUnicode=true&characterEncoding=UTF-8&useSSL=false"
@@ -68,11 +60,10 @@ public class KetNoiMySQL {
         } catch (SQLException e) {
             Log.w("KetNoiMySQL", "Không kết nối được " + url, e);
             throw new LoiCSDL("Không kết nối được MySQL " + layDiaChi()
-                    + ".\nKiểm tra Docker đã chạy và địa chỉ trong Cài đặt.");
+                    + ".\nKiểm tra Docker (MySQL) đã chạy và địa chỉ máy chủ còn đúng.");
         }
     }
 
-    /** Đổi lỗi SQL sang thông báo dễ hiểu. */
     public static LoiCSDL dichLoi(SQLException e) {
         Log.w("KetNoiMySQL", "Lỗi SQL " + e.getErrorCode(), e);
         switch (e.getErrorCode()) {

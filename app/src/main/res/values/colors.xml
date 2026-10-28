@@ -3,38 +3,56 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Espresso POS design system -->
-    <color name="espresso">#3E2723</color>
-    <color name="espresso_dark">#271310</color>
-    <color name="mocha">#5D4037</color>
-    <color name="mocha_light">#8D6E63</color>
-    <color name="caramel">#F57C00</color>
-    <color name="caramel_dark">#964900</color>
-    <color name="caramel_soft">#FFE0C7</color>
-    <color name="canvas">#FBF9F6</color>
-    <color name="latte">#F5F0EB</color>
-    <color name="latte_dark">#EAE8E5</color>
+    <!-- Mint POS palette -->
+    <color name="mint_header">#B9EBD4</color>
+    <color name="mint_sidebar">#DDF6E8</color>
+    <color name="forest_green">#173D2B</color>
+    <color name="mint_border">#C6E5D2</color>
+    <color name="mint_accent">#4CAF7B</color>
+    <color name="mint_light">#B9EBD4</color>
+    <color name="mint_card">#EEF8F2</color>
+    <color name="mint_card_border">#D3EEDF</color>
+
+    <!-- Bàn đang phục vụ / cần xử lý -->
+    <color name="cam">#F08A24</color>
+    <color name="cam_nhat">#FFF3E6</color>
+    <color name="cam_vien">#FAD9B5</color>
+    <color name="tim">#7B5BC4</color>
+    <color name="tim_nhat">#F2EDFC</color>
+    <color name="tim_vien">#D9CDF3</color>
+
+    <!-- Core design tokens (kept stable so existing layouts continue to work) -->
+    <color name="espresso">#173D2B</color>
+    <color name="espresso_dark">#103321</color>
+    <color name="mocha">#245B3B</color>
+    <color name="mocha_light">#5F8C70</color>
+    <color name="caramel">#2F754B</color>
+    <color name="caramel_dark">#205C39</color>
+    <color name="caramel_soft">#DDF5E7</color>
+    <color name="canvas">#F4FAF6</color>
+    <color name="latte">#EAF7EF</color>
+    <color name="latte_dark">#D4EFDF</color>
     <color name="card">#FFFFFF</color>
-    <color name="outline">#D7CCC8</color>
-    <color name="outline_soft">#EFEAE4</color>
-    <color name="text_primary">#1B1C1A</color>
-    <color name="text_secondary">#504442</color>
-    <color name="text_hint">#827472</color>
+    <color name="outline">#BBDCC8</color>
+    <color name="outline_soft">#E3F1E8</color>
+    <color name="text_primary">#173D2B</color>
+    <color name="text_secondary">#4D6B57</color>
+    <color name="text_hint">#809789</color>
 
-    <color name="status_green">#2E7D32</color>
-    <color name="status_green_bg">#E8F5E9</color>
-    <color name="status_amber">#EF6C00</color>
-    <color name="status_amber_bg">#FFF3E0</color>
-    <color name="status_red">#C62828</color>
-    <color name="status_red_bg">#FFEBEE</color>
-    <color name="status_purple">#9C1C6B</color>
+    <color name="status_green">#287747</color>
+    <color name="status_green_bg">#DDF5E7</color>
+    <color name="status_amber">#996515</color>
+    <color name="status_amber_bg">#FFF3D7</color>
+    <color name="status_red">#B4232F</color>
+    <color name="status_red_bg">#FDEBED</color>
+    <color name="status_purple">#8B3D83</color>
 
-    <!-- Giao diện khách hàng (phong cách The Coffee House) -->
-    <color name="tch_cam">#E57905</color>
-    <color name="tch_cam_dam">#B85F00</color>
-    <color name="tch_cam_nhat">#FEF3E6</color>
-    <color name="tch_nen">#F5F5F5</color>
-    <color name="tch_chu">#191919</color>
-    <color name="tch_chu_phu">#8A8A8A</color>
-    <color name="tch_vien">#EBEBEB</color>
+    <!-- Customer-facing screens use the same Mint POS palette -->
+    <color name="tch_cam">#2F754B</color>
+    <color name="tch_cam_dam">#205C39</color>
+    <color name="tch_cam_nhat">#DDF5E7</color>
+    <color name="tch_nen">#F4FAF6</color>
+    <color name="tch_chu">#173D2B</color>
+    <color name="tch_chu_phu">#6F8978</color>
+    <color name="tch_vien">#D7EDE0</color>
 </resources>

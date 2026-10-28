@@ -8,10 +8,7 @@ import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 
-/**
- * Adapter dùng chung cho các danh sách đơn giản (đặt bàn, đơn app, nhân viên...):
- * chỉ cần layout của một dòng và hàm gán dữ liệu vào dòng đó.
- */
+
 public class DongAdapter<T> extends BaseAdapter {
 
     public interface GanDuLieu<T> {

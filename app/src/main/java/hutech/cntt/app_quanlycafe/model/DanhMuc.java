@@ -5,10 +5,10 @@ public class DanhMuc {
     private String ten;
     private int soMon;
 
-    public DanhMuc(int id, String ten, int soMon) {
-        this.id = id;
-        this.ten = ten;
+    public DanhMuc(int soMon, String ten, int id) {
         this.soMon = soMon;
+        this.ten = ten;
+        this.id = id;
     }
 
     public int getId() { return id; }

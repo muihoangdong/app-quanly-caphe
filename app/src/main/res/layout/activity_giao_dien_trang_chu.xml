@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Trang chủ: tổng quan bàn, doanh thu trong ngày, truy cập nhanh gọi món -->
+<!-- Trang chủ: lời chào, tạo đơn hàng, thao tác nhanh, bàn đang phục vụ, hoạt động gần đây -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,7 +24,7 @@
             android:orientation="vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="20dp">
 
             <!-- Báo lỗi kết nối máy chủ -->
             <LinearLayout
@@ -33,295 +33,240 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_pill_red"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="12dp"
+                android:orientation="vertical"
+                android:padding="14dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <TextView
                     android:id="@+id/txtLoiKetNoi"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textColor="@color/status_red"
                     android:textSize="13sp"
                     tools:text="Không kết nối được máy chủ" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnThuLai"
-                    style="@style/NutNguyHiem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:minHeight="40dp"
-                    android:text="Thử lại" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/TextTieuDe"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Tổng quan hôm nay"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:id="@+id/txtNgayHomNay"
-                    style="@style/TextNhan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    tools:text="20/10/2026" />
-            </LinearLayout>
-
-            <!-- Thống kê bàn -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card_latte"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/txtTongSoBan"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:text="--"
-                        android:textColor="@color/text_primary"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        style="@style/TextNhan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tổng số bàn"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card_latte"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/txtSoBanTrongTC"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:text="--"
-                        android:textColor="@color/status_green"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        style="@style/TextNhan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Bàn trống"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card_latte"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/txtSoBanPhucVuTC"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:text="--"
-                        android:textColor="@color/status_amber"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        style="@style/TextNhan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Đang phục vụ"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtChiTietBanTC"
-                style="@style/TextNhan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textSize="12sp"
-                tools:text="Trong đó 1 bàn chờ thanh toán • 0 đã đặt • 0 bảo trì" />
-
-            <!-- Doanh thu trong ngày -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_card_dark"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="DOANH THU HÔM NAY"
-                    android:textColor="@color/caramel_soft"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtDoanhThuTC"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="--"
-                    android:textColor="@color/white"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    tools:text="1.250.000đ" />
-
-                <TextView
-                    android:id="@+id/txtSoHoaDonTC"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="@color/caramel_soft"
-                    android:textSize="13sp"
-                    tools:text="12 hóa đơn • Tiền mặt 450.000đ" />
-
-                <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:alpha="0.2"
-                    android:background="@color/white" />
-
-                <TextView
-                    android:id="@+id/txtDangPhucVuTC"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    tools:text="Đang phục vụ 3 bàn • Tạm tính 520.000đ" />
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMayChu"
+                        style="@style/NutNguyHiem"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:minHeight="40dp"
+                        android:text="Địa chỉ máy chủ" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnThuLai"
+                        style="@style/NutNguyHiem"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="40dp"
+                        android:text="Thử lại" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Truy cập nhanh -->
-            <TextView
-                style="@style/TextTieuDe"
-                android:layout_width="wrap_content"
+            <!-- Lời chào nhân viên -->
+            <LinearLayout
+                android:id="@+id/layoutNhanVien"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Truy cập nhanh"
-                android:textSize="16sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:paddingBottom="12dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_avatar"
+                    android:contentDescription="Ảnh đại diện"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_person"
+                    app:tint="@color/forest_green" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Xin chào,"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/txtTenNhanVien"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nhân viên"
+                        android:textColor="@color/forest_green"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="Nguyễn Văn A" />
+
+                    <TextView
+                        android:id="@+id/txtVaiTro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_hint"
+                        android:textSize="12sp"
+                        tools:text="Nhân viên" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnDangXuat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_latte"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="Đăng xuất"
+                    android:textColor="@color/forest_green"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/ic_logout"
+                    app:drawableTint="@color/forest_green" />
+            </LinearLayout>
+
+            <!-- Banner chào mừng -->
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoiMonNhanh"
+                android:id="@+id/btnTaoDonHang"
                 style="@style/NutChinh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minHeight="64dp"
-                android:text="Gọi món cho bàn"
-                android:textSize="17sp"
-                app:icon="@drawable/ic_coffee"
+                android:layout_marginTop="14dp"
+                android:text="Tạo đơn hàng"
+                app:icon="@drawable/ic_add"
                 app:iconGravity="textStart" />
+
+            <!-- Thao tác nhanh -->
+            <TextView
+                style="@style/TieuDeMuc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Thao tác nhanh" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
+                <include
                     android:id="@+id/btnSoDoBanNhanh"
-                    style="@style/NutPhu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:text="Sơ đồ bàn"
-                    android:textSize="13sp"
-                    app:icon="@drawable/ic_table"
-                    app:iconSize="18dp" />
+                    layout="@layout/item_thao_tac_nhanh" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnThemMonNhanh"
-                    style="@style/NutPhu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:text="Thêm món"
-                    android:textSize="13sp"
-                    app:icon="@drawable/ic_add"
-                    app:iconSize="18dp" />
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <include
+                    android:id="@+id/btnGoiMonNhanh"
+                    layout="@layout/item_thao_tac_nhanh" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/btnDonHangNhanh"
+                    layout="@layout/item_thao_tac_nhanh" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
+
+                <include
                     android:id="@+id/btnHoaDonNhanh"
-                    style="@style/NutPhu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Hóa đơn"
-                    android:textSize="13sp"
-                    app:icon="@drawable/ic_receipt"
-                    app:iconSize="18dp" />
+                    layout="@layout/item_thao_tac_nhanh" />
             </LinearLayout>
 
             <!-- Bàn đang phục vụ -->
-            <TextView
-                style="@style/TextTieuDe"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Bàn đang phục vụ"
-                android:textSize="16sp" />
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TieuDeMuc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bàn đang phục vụ" />
+
+                <TextView
+                    android:id="@+id/txtXemTatCaBan"
+                    style="@style/LienKet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xem tất cả" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layoutBanDangPhucVu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical" />
+                android:background="@drawable/bg_the_trang"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
 
-            <TextView
-                android:id="@+id/txtKhongCoBanPhucVu"
-                style="@style/TextNhan"
+            <!-- Hoạt động gần đây: hóa đơn vừa thanh toán -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TieuDeMuc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hoạt động gần đây" />
+
+                <TextView
+                    android:id="@+id/txtXemTatCaHoaDon"
+                    style="@style/LienKet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xem tất cả" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutHoatDong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card_latte"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="Chưa có bàn nào đang phục vụ"
-                android:visibility="gone" />
+                android:background="@drawable/bg_the_trang"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
         </LinearLayout>
     </ScrollView>
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Đổi tab: giữ màn hình cũ đứng yên cho tới khi màn hình mới hiện xong (tránh nháy nền) -->
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200"
+    android:fromAlpha="1"
+    android:toAlpha="1" />

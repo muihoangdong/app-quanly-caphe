@@ -105,23 +105,21 @@
 
                 <TextView
                     style="@style/TextNhapLieu"
-                    android:text="Tên món hiển thị trên Bill &amp; Menu *" />
+                    android:text="Tên món hiển thị trên Bill &amp; Menu" />
 
                 <EditText
                     android:id="@+id/edtTenMon"
                     style="@style/ONhapLieu"
-                    android:hint="VD: Cà phê Muối Cốt Dừa"
                     android:inputType="textCapSentences" />
 
                 <TextView
                     style="@style/TextNhapLieu"
-                    android:text="Mã SKU / Barcode" />
+                    android:text="Mã món" />
 
                 <EditText
                     android:id="@+id/edtMaMon"
                     style="@style/ONhapLieu"
                     android:fontFamily="monospace"
-                    android:hint="CF-MUOI-01"
                     android:inputType="textCapCharacters" />
 
                 <LinearLayout
@@ -157,14 +155,13 @@
 
                 <TextView
                     style="@style/TextNhapLieu"
-                    android:text="Mô tả hương vị (in bill &amp; app khách)" />
+                    android:text="Mô tả" />
 
                 <EditText
                     android:id="@+id/edtMoTa"
                     style="@style/ONhapLieu"
                     android:layout_height="wrap_content"
                     android:gravity="top"
-                    android:hint="Cà phê Robusta Đắk Lắk kết hợp lớp kem muối..."
                     android:inputType="textCapSentences|textMultiLine"
                     android:minLines="3"
                     android:paddingTop="12dp"

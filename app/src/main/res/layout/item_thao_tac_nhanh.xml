@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ô thao tác nhanh ở trang chủ (Sơ đồ bàn, Gọi món, Đơn hàng, Hóa đơn) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/bg_the_trang"
+    android:stateListAnimator="@animator/nhan_nut"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="72dp"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imgThaoTac"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:background="@drawable/bg_icon_mint"
+        android:contentDescription="Biểu tượng"
+        android:padding="9dp"
+        app:tint="@color/forest_green"
+        tools:src="@drawable/ic_table" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenThaoTac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Sơ đồ bàn" />
+
+        <TextView
+            android:id="@+id/txtMoTaThaoTac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:maxLines="2"
+            android:textColor="@color/text_hint"
+            android:textSize="11sp"
+            tools:text="Xem trạng thái bàn" />
+    </LinearLayout>
+</LinearLayout>

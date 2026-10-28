@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Màn hình Sơ đồ bàn (thiết kế: s_b_n_qu_n_l_khu_v_c) -->
+<!-- Quản lý bàn: lọc theo trạng thái, lưới bàn 2 cột -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -10,168 +9,62 @@
     android:orientation="vertical"
     tools:context=".GiaoDienBanActivity">
 
-    <include layout="@layout/layout_header" />
+    <include layout="@layout/layout_thanh_tieu_de" />
 
-    <!-- Hàng thao tác nhanh -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+    <EditText
+        android:id="@+id/edtTimBan"
+        style="@style/ONhapLieu"
+        android:layout_height="46dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_o_tim_kiem"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/text_hint"
+        android:hint="Tìm bàn..."
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDoiBan"
-            style="@style/NutPhu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:text="Đổi bàn"
-            android:textSize="13sp"
-            app:icon="@drawable/ic_swap"
-            app:iconSize="18dp"
-            app:iconTint="@color/caramel_dark" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGopBan"
-            style="@style/NutPhu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:text="Gộp bàn"
-            android:textSize="13sp"
-            app:icon="@drawable/ic_merge"
-            app:iconSize="18dp"
-            app:iconTint="@color/caramel_dark" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnThemBan"
-            style="@style/NutPhu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:text="Thêm bàn"
-            android:textColor="@color/caramel_dark"
-            android:textSize="13sp"
-            app:backgroundTint="@color/caramel_soft"
-            app:icon="@drawable/ic_add"
-            app:iconSize="18dp"
-            app:iconTint="@color/caramel_dark" />
-    </LinearLayout>
-
-    <!-- Thống kê nhanh -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_card_latte"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/txtSoCoKhach"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="0"
-                android:textColor="@color/status_amber"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                style="@style/TextNhan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Có khách"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_card_latte"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/txtSoBanTrong"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="0"
-                android:textColor="@color/text_primary"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                style="@style/TextNhan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bàn trống"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bg_card_latte"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/txtSoChoThanhToan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="0"
-                android:textColor="@color/caramel_dark"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                style="@style/TextNhan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chờ thanh toán"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Lọc theo khu vực -->
+    <!-- Lọc theo trạng thái -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:clipToPadding="false"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:scrollbars="none">
 
         <RadioGroup
-            android:id="@+id/rgKhuVuc"
+            android:id="@+id/rgTrangThaiBan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" />
+            android:checkedButton="@id/radTatCaBan"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radTatCaBan"
+                style="@style/ChipLoc"
+                android:text="Tất cả" />
+
+            <RadioButton
+                android:id="@+id/radBanTrong"
+                style="@style/ChipLoc"
+                android:text="Trống" />
+
+            <RadioButton
+                android:id="@+id/radBanPhucVu"
+                style="@style/ChipLoc"
+                android:text="Đang phục vụ" />
+
+            <RadioButton
+                android:id="@+id/radBanCanXuLy"
+                style="@style/ChipLoc"
+                android:text="Bàn đặt trước" />
+        </RadioGroup>
     </HorizontalScrollView>
 
     <FrameLayout
@@ -199,8 +92,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="24dp"
-            android:text="Quán chưa có bàn nào.
-Bấm &quot;Thêm bàn&quot; để tạo bàn đầu tiên."
+            android:text="Không có bàn nào"
             android:visibility="gone" />
     </FrameLayout>
 

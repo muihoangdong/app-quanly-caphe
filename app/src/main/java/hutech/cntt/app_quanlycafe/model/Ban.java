@@ -7,11 +7,11 @@ public class Ban {
     public static final int DA_DAT = 3;
     public static final int BAO_TRI = 4;
 
-    /** Giá trị cột `Tables`.status trong MySQL, theo đúng thứ tự hằng số ở trên. */
     private static final String[] MA_TRANG_THAI = {"EMPTY", "SERVING", "WAITING_PAYMENT", "RESERVED", "MAINTENANCE"};
-    private static final String[] TEN_TRANG_THAI = {"Trống", "Đang phục vụ", "Chờ thanh toán", "Đã đặt", "Bảo trì"};
+    private static final String[] TEN_TRANG_THAI = {"Trống", "Đang phục vụ", "Chờ thanh toán", "Đặt trước", "Trống"};
 
     public static int tuMa(String ma) {
+        if ("MAINTENANCE".equals(ma)) return TRONG;
         for (int i = 0; i < MA_TRANG_THAI.length; i++) {
             if (MA_TRANG_THAI[i].equals(ma)) return i;
         }
@@ -80,9 +80,22 @@ public class Ban {
     public long getTamTinh() { return tamTinh; }
     public void setTamTinh(long tamTinh) { this.tamTinh = tamTinh; }
 
-    /** Bàn chưa có order đang mở (trống, đã đặt hoặc bảo trì). */
     public boolean isTrong() {
         return hoaDonId == 0;
+    }
+
+    public boolean isCoNguoi() {
+        return !isTrong() || trangThai == DA_DAT;
+    }
+
+    public int getTrangThaiHienThi() {
+        if (!isTrong()) return trangThai == CHO_THANH_TOAN ? CHO_THANH_TOAN : CO_KHACH;
+        return trangThai == DA_DAT ? DA_DAT : TRONG;
+    }
+
+    public boolean isCanXuLy() {
+        int t = getTrangThaiHienThi();
+        return t == CHO_THANH_TOAN || t == DA_DAT;
     }
 
     @Override

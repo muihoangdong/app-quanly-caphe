@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Một hóa đơn trong danh sách đơn hàng -->
+<!-- Một hóa đơn / đơn hàng trong danh sách -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_card"
+    android:background="@drawable/bg_the_trang"
+    android:stateListAnimator="@animator/nhan_nut"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="14dp">
+    android:padding="12dp">
 
     <ImageView
         android:id="@+id/imgLoaiHoaDon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_icon_soft"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_icon_mint"
         android:contentDescription="Hóa đơn"
-        android:padding="12dp"
+        android:padding="11dp"
         android:src="@drawable/ic_receipt"
-        app:tint="@color/mocha" />
+        app:tint="@color/forest_green" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -31,33 +32,37 @@
             android:id="@+id/txtBanHoaDon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            tools:text="Bàn 01 • Tầng 1" />
+            tools:text="Hóa đơn #HD0123" />
 
         <TextView
             android:id="@+id/txtMaHoaDonItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:textColor="@color/text_hint"
-            android:textSize="11sp"
-            tools:text="#HD-20261020-0004" />
+            android:layout_marginTop="1dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="12/04/2025 10:24" />
 
         <TextView
             android:id="@+id/txtThoiGianHoaDon"
-            style="@style/TextNhan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_hint"
             android:textSize="12sp"
-            tools:text="14:15 → 15:20 • 5 món • VietQR" />
+            tools:text="Bàn 3 • 3 món • Tiền mặt" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:gravity="end"
         android:orientation="vertical">
 
@@ -66,9 +71,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            tools:text="208.000đ" />
+            tools:text="85.000đ" />
 
         <TextView
             android:id="@+id/txtTrangThaiHoaDon"
@@ -85,4 +90,12 @@
             android:textStyle="bold"
             tools:text="Đã thanh toán" />
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="4dp"
+        android:contentDescription="Mở"
+        android:src="@drawable/ic_chevron_right"
+        app:tint="@color/text_hint" />
 </LinearLayout>

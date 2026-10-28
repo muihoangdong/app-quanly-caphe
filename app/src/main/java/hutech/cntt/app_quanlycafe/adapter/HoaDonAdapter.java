@@ -44,9 +44,9 @@ public class HoaDonAdapter extends BaseAdapter {
 
     static class ViewHolder {
         ImageView imgLoai;
-        TextView txtBan;
-        TextView txtMa;
-        TextView txtThoiGian;
+        TextView txtTieuDe;
+        TextView txtDong2;
+        TextView txtDong3;
         TextView txtTong;
         TextView txtTrangThai;
     }
@@ -58,9 +58,9 @@ public class HoaDonAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_hoa_don, parent, false);
             holder = new ViewHolder();
             holder.imgLoai = convertView.findViewById(R.id.imgLoaiHoaDon);
-            holder.txtBan = convertView.findViewById(R.id.txtBanHoaDon);
-            holder.txtMa = convertView.findViewById(R.id.txtMaHoaDonItem);
-            holder.txtThoiGian = convertView.findViewById(R.id.txtThoiGianHoaDon);
+            holder.txtTieuDe = convertView.findViewById(R.id.txtBanHoaDon);
+            holder.txtDong2 = convertView.findViewById(R.id.txtMaHoaDonItem);
+            holder.txtDong3 = convertView.findViewById(R.id.txtThoiGianHoaDon);
             holder.txtTong = convertView.findViewById(R.id.txtTongHoaDon);
             holder.txtTrangThai = convertView.findViewById(R.id.txtTrangThaiHoaDon);
             convertView.setTag(holder);
@@ -69,29 +69,31 @@ public class HoaDonAdapter extends BaseAdapter {
         }
 
         HoaDon hd = listHoaDon.get(position);
-        holder.txtBan.setText(hd.getTenBan() + " • " + hd.getKhuVuc());
-        holder.txtMa.setText("#" + hd.getMaHoaDon());
-
-        String thoiGian = TienIch.gio(hd.getGioVao());
-        if (hd.getGioRa() > 0) thoiGian += " → " + TienIch.gio(hd.getGioRa());
-        thoiGian += " • " + hd.getSoMon() + " món";
-        if (hd.getTrangThai() == HoaDon.DA_THANH_TOAN && hd.getPhuongThuc() != null) {
-            thoiGian += " • " + hd.getPhuongThuc();
-        }
-        holder.txtThoiGian.setText(thoiGian);
-
         switch (hd.getTrangThai()) {
             case HoaDon.DANG_PHUC_VU:
+                holder.txtTieuDe.setText(hd.getTenBan());
+                holder.txtDong2.setText("#" + hd.getMaHoaDon() + " • " + hd.getSoMon() + " món • "
+                        + hd.getSoKhach() + " khách");
+                holder.txtDong3.setText("Vào " + TienIch.gio(hd.getGioVao())
+                        + " (" + TienIch.thoiGianNgoi(hd.getGioVao()) + ")"
+                        + (hd.getTenNhanVien() != null ? " • " + hd.getTenNhanVien() : ""));
                 holder.txtTong.setText(TienIch.tien(hd.getTamTinh()));
-                datTrangThai(holder, "Đang phục vụ", R.drawable.bg_pill_amber, R.color.status_amber,
-                        R.drawable.ic_coffee, R.color.caramel_soft, R.color.caramel_dark);
+                datTrangThai(holder, "Đang phục vụ", R.drawable.bg_pill_amber, R.color.cam,
+                        hd.isLuotKhach() ? R.drawable.ic_ly : R.drawable.ic_table, R.color.cam_nhat, R.color.cam);
                 break;
             case HoaDon.DA_THANH_TOAN:
+                holder.txtTieuDe.setText("Hóa đơn #" + hd.getMaHoaDon());
+                holder.txtDong2.setText(TienIch.ngayGio(hd.getGioRa()));
+                holder.txtDong3.setText(hd.getTenBan() + " • " + hd.getSoMon() + " món"
+                        + (hd.getPhuongThuc() != null ? " • " + hd.getPhuongThuc() : ""));
                 holder.txtTong.setText(TienIch.tien(hd.getTongTien()));
                 datTrangThai(holder, "Đã thanh toán", R.drawable.bg_pill_green, R.color.status_green,
-                        R.drawable.ic_check, R.color.status_green_bg, R.color.status_green);
+                        R.drawable.ic_receipt, R.color.mint_card, R.color.forest_green);
                 break;
             default:
+                holder.txtTieuDe.setText("Đơn #" + hd.getMaHoaDon());
+                holder.txtDong2.setText(TienIch.ngayGio(hd.getGioRa() > 0 ? hd.getGioRa() : hd.getGioVao()));
+                holder.txtDong3.setText(hd.getTenBan() + " • " + hd.getSoMon() + " món");
                 holder.txtTong.setText(TienIch.tien(hd.getTamTinh()));
                 datTrangThai(holder, "Đã hủy", R.drawable.bg_pill_red, R.color.status_red,
                         R.drawable.ic_close, R.color.status_red_bg, R.color.status_red);

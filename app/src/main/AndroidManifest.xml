@@ -9,13 +9,14 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="ZENTEA"
+        android:label="ZEN Tea"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App_QuanLyCafe">
         <activity
-            android:name=".GiaoDienTrangChuActivity"
-            android:exported="true">
+            android:name=".GiaoDienDangNhapActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,11 +24,21 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".GiaoDienTrangChuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GiaoDienTaiKhoanActivity"
+            android:exported="false" />
+        <activity
             android:name=".GiaoDienBanActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".GiaoDienThucDonActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".GiaoDienQuanLyThucDonActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
@@ -43,11 +54,15 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".GiaoDienHoaDonActivity"
+            android:name=".GiaoDienOrderActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".GiaoDienBaoCaoActivity"
+            android:name=".GiaoDienCaiDatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".GiaoDienLichSuHoaDonActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Thanh tiêu đề "Espresso POS" dùng chung cho các màn hình chính -->
+<!-- Header trang chủ: logo, tên quán -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -10,61 +10,23 @@
     android:paddingStart="16dp"
     android:paddingEnd="16dp">
 
-    <FrameLayout
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/bg_logo">
+    <ImageView
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:contentDescription="Logo Espresso POS"
+        android:src="@drawable/ic_cup"
+        app:tint="@color/forest_green" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:contentDescription="Logo"
-            android:src="@drawable/ic_coffee"
-            app:tint="@color/white" />
-    </FrameLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/txtTieuDeHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="10dp"
         android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txtTieuDeHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txtPhuDeHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ca_lam"
-            android:textColor="@color/caramel_dark"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imgThongBao"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Thông báo"
-        android:padding="8dp"
-        android:src="@drawable/ic_bell" />
-
-    <ImageView
-        android:id="@+id/imgCaiDat"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Cài đặt máy chủ"
-        android:padding="8dp"
-        android:src="@drawable/ic_settings" />
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/app_name"
+        android:textColor="@color/forest_green"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 </LinearLayout>

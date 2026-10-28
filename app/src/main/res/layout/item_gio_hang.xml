@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một dòng trong giỏ hàng: ảnh, tên + ghi chú, giá, nút - số lượng + -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/imgMonGio"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_icon_mint"
+        android:contentDescription="Ảnh món"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/img_mon_ca_phe_sua" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTenMonGio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Cà phê sữa" />
+
+        <TextView
+            android:id="@+id/txtGiaMonGio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="40.000đ • Ít đá" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btnBotMon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_circle_latte"
+        android:contentDescription="Bớt"
+        android:padding="6dp"
+        android:src="@drawable/ic_remove"
+        app:tint="@color/forest_green" />
+
+    <TextView
+        android:id="@+id/txtSoLuongMonGio"
+        android:layout_width="34dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="2" />
+
+    <ImageView
+        android:id="@+id/btnThemMonGio"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_nut_cong"
+        android:contentDescription="Thêm"
+        android:padding="6dp"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white" />
+</LinearLayout>

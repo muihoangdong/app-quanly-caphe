@@ -1,9 +1,7 @@
 package hutech.cntt.app_quanlycafe.data;
 
 import android.content.Context;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.content.SharedPreferences;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,19 +17,22 @@ import hutech.cntt.app_quanlycafe.model.Ban;
 import hutech.cntt.app_quanlycafe.model.ChiTietHoaDon;
 import hutech.cntt.app_quanlycafe.model.DanhMuc;
 import hutech.cntt.app_quanlycafe.model.HoaDon;
+import hutech.cntt.app_quanlycafe.model.NhanVien;
 import hutech.cntt.app_quanlycafe.model.ThucUong;
 
-/**
- * Đọc / ghi CSDL MySQL quanlycafe bằng JDBC: bàn, danh mục, thức uống, đơn gọi món, hóa đơn.
- * Mỗi hàm mở một kết nối riêng và đóng ngay khi xong. Các hàm chạy đồng bộ nên luôn gọi qua {@link ChayNen}.
- * Thời gian trong CSDL là DATETIME, đổi sang mili-giây bằng UNIX_TIMESTAMP(...) * 1000.
- */
+
 public class CafeDatabase {
 
-    public static final double THUE_VAT = 0.08;
+    private static final String TEN_FILE = "phien_lam_viec";
+    private static final String KHOA_NHAN_VIEN = "nhan_vien_id";
+    private static final String KHOA_QUAN_LY = "la_quan_ly";
+
+    public static final String CD_TEN_QUAN = "shop_name";
+    public static final String CD_TAI_KHOAN = "bank_account";
 
     private static CafeDatabase instance;
     private final KetNoiMySQL ketNoi;
+    private final Context context;
 
     public static synchronized CafeDatabase getInstance(Context context) {
         if (instance == null) instance = new CafeDatabase(context);
@@ -39,20 +40,21 @@ public class CafeDatabase {
     }
 
     private CafeDatabase(Context context) {
-        ketNoi = new KetNoiMySQL(context);
+        this.context = context.getApplicationContext();
+        ketNoi = new KetNoiMySQL(this.context);
     }
 
     public KetNoiMySQL getKetNoi() {
         return ketNoi;
     }
 
-    // ===================== Tiện ích JDBC =====================
+
 
     private interface CongViec<T> {
         T lam(Connection c) throws SQLException, LoiCSDL;
     }
 
-    /** Mở kết nối, chạy công việc rồi đóng kết nối. */
+
     private <T> T chay(CongViec<T> congViec) throws LoiCSDL {
         try (Connection c = ketNoi.moKetNoi()) {
             return congViec.lam(c);
@@ -61,7 +63,7 @@ public class CafeDatabase {
         }
     }
 
-    /** Như chay() nhưng trong một transaction: lỗi ở bất kỳ câu lệnh nào thì hoàn tác tất cả. */
+
     private <T> T giaoDich(CongViec<T> congViec) throws LoiCSDL {
         try (Connection c = ketNoi.moKetNoi()) {
             c.setAutoCommit(false);
@@ -84,14 +86,14 @@ public class CafeDatabase {
         return ps;
     }
 
-    /** INSERT / UPDATE / DELETE, trả về số dòng bị ảnh hưởng. */
+
     private static int ghi(Connection c, String sql, Object... thamSo) throws SQLException {
         try (PreparedStatement ps = lenh(c, sql, thamSo)) {
             return ps.executeUpdate();
         }
     }
 
-    /** INSERT, trả về id tự tăng vừa tạo. */
+
     private static int them(Connection c, String sql, Object... thamSo) throws SQLException {
         try (PreparedStatement ps = lenh(c, sql, thamSo)) {
             ps.executeUpdate();
@@ -101,7 +103,6 @@ public class CafeDatabase {
         }
     }
 
-    /** SELECT trả về một số (COUNT, SUM...). */
     private static long so(Connection c, String sql, Object... thamSo) throws SQLException {
         try (PreparedStatement ps = lenh(c, sql, thamSo); ResultSet rs = ps.executeQuery()) {
             return rs.next() ? rs.getLong(1) : 0;
@@ -121,50 +122,136 @@ public class CafeDatabase {
         return ds;
     }
 
-    // ===================== TRANG CHỦ =====================
+
 
     public void kiemTraKetNoi() throws LoiCSDL {
         chay(c -> so(c, "SELECT 1"));
     }
 
-    /** Số bàn theo trạng thái + doanh thu trong khoảng thời gian (mili-giây). */
-    public JSONObject layTongQuan(long tuNgay, long denNgay) throws LoiCSDL {
+
+    //CẤU HÌNH QUÁN (Settings)
+
+    public LinkedHashMap<String, String> layCauHinh() throws LoiCSDL {
         return chay(c -> {
-            try {
-                JSONObject theoTrangThai = new JSONObject();
-                for (int i = 0; i <= Ban.BAO_TRI; i++) theoTrangThai.put(Ban.maTrangThai(i), 0);
-                int tongBan = 0;
-                try (PreparedStatement ps = lenh(c, "SELECT status, COUNT(*) FROM `Tables` GROUP BY status");
-                     ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        theoTrangThai.put(rs.getString(1), rs.getInt(2));
-                        tongBan += rs.getInt(2);
-                    }
-                }
-                JSONObject kq = new JSONObject();
-                kq.put("total_tables", tongBan);
-                kq.put("tables_by_status", theoTrangThai);
-                try (PreparedStatement ps = lenh(c, "SELECT COUNT(*), COALESCE(SUM(total), 0),"
-                                + " COALESCE(SUM(CASE WHEN payment_method = 'CASH' THEN total ELSE 0 END), 0)"
-                                + " FROM Invoices WHERE paid_at >= FROM_UNIXTIME(?) AND paid_at < FROM_UNIXTIME(?)",
-                        tuNgay / 1000, denNgay / 1000);
-                     ResultSet rs = ps.executeQuery()) {
-                    rs.next();
-                    kq.put("invoice_count", rs.getInt(1));
-                    kq.put("revenue", rs.getLong(2));
-                    kq.put("cash_revenue", rs.getLong(3));
-                }
-                kq.put("open_orders", so(c, "SELECT COUNT(*) FROM Orders WHERE status = 'OPEN'"));
-                kq.put("open_amount", so(c, "SELECT COALESCE(SUM(d.quantity * d.unit_price), 0)"
-                        + " FROM OrderDetails d JOIN Orders o ON o.id = d.order_id WHERE o.status = 'OPEN'"));
-                return kq;
-            } catch (JSONException e) {
-                throw new LoiCSDL("Lỗi đọc dữ liệu tổng quan");
+            LinkedHashMap<String, String> kq = new LinkedHashMap<>();
+            kq.put(CD_TEN_QUAN, "Espresso POS");
+            kq.put(CD_TAI_KHOAN, "");
+            try (PreparedStatement ps = lenh(c, "SELECT setting_key, setting_value FROM Settings");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) kq.put(rs.getString(1), rs.getString(2));
             }
+            return kq;
         });
     }
 
-    // ===================== BÀN =====================
+    //NHÂN VIÊN (Users)
+
+    public static final String MAT_KHAU_MAC_DINH = "123456";
+
+    private static final String SQL_NHAN_VIEN =
+            "SELECT id, username, full_name, role, is_active FROM Users";
+
+    private static NhanVien docNhanVien(ResultSet rs) throws SQLException {
+        return new NhanVien(rs.getInt(1), rs.getString(2), rs.getString(3),
+                "ADMIN".equals(rs.getString(4)), rs.getInt(5) == 1);
+    }
+
+
+    private SharedPreferences phien() {
+        return context.getSharedPreferences(TEN_FILE, Context.MODE_PRIVATE);
+    }
+
+    private void luuPhien(NhanVien nv) {
+        phien().edit().putInt(KHOA_NHAN_VIEN, nv.getId()).putBoolean(KHOA_QUAN_LY, nv.isQuanLy()).apply();
+    }
+
+    public boolean daDangNhap() {
+        return idNguoiDangNhap() > 0;
+    }
+
+    public int idNguoiDangNhap() {
+        return phien().getInt(KHOA_NHAN_VIEN, 0);
+    }
+
+    public boolean laQuanLy() {
+        return daDangNhap() && phien().getBoolean(KHOA_QUAN_LY, false);
+    }
+
+    private void canQuanLy() throws LoiCSDL {
+        if (!laQuanLy()) throw new LoiCSDL("Chỉ quản lý mới được thực hiện thao tác này");
+    }
+
+    public NhanVien dangNhap(String tenDangNhap, String matKhau) throws LoiCSDL {
+        ArrayList<NhanVien> ds = chay(c -> danhSach(c, SQL_NHAN_VIEN
+                        + " WHERE username = ? AND password_hash = SHA2(?, 256)",
+                CafeDatabase::docNhanVien, tenDangNhap.trim(), matKhau));
+        if (ds.isEmpty()) throw new LoiCSDL("Sai tên đăng nhập hoặc mật khẩu");
+        NhanVien nv = ds.get(0);
+        if (!nv.isHoatDong()) throw new LoiCSDL("Tài khoản đã bị khóa, hãy liên hệ quản lý");
+        luuPhien(nv);
+        return nv;
+    }
+
+    public void dangXuat() {
+        phien().edit().remove(KHOA_NHAN_VIEN).remove(KHOA_QUAN_LY).apply();
+    }
+
+    public NhanVien layNguoiDangNhap() throws LoiCSDL {
+        int id = idNguoiDangNhap();
+        if (id == 0) return null;
+        ArrayList<NhanVien> ds = chay(c -> danhSach(c, SQL_NHAN_VIEN + " WHERE id = ? AND is_active = 1",
+                CafeDatabase::docNhanVien, id));
+        if (ds.isEmpty()) return null;
+        luuPhien(ds.get(0));
+        return ds.get(0);
+    }
+
+    private Integer nhanVien(Connection c) throws SQLException {
+        long id = so(c, "SELECT id FROM Users WHERE id = ? AND is_active = 1", idNguoiDangNhap());
+        return id == 0 ? null : (int) id;
+    }
+
+    public void doiMatKhau(String matKhauCu, String matKhauMoi) throws LoiCSDL {
+        int soDong = chay(c -> ghi(c, "UPDATE Users SET password_hash = SHA2(?, 256)"
+                + " WHERE id = ? AND password_hash = SHA2(?, 256)", matKhauMoi, idNguoiDangNhap(), matKhauCu));
+        if (soDong == 0) throw new LoiCSDL("Mật khẩu hiện tại không đúng");
+    }
+
+    //Quản lý tài khoản (chỉ quản lý)
+
+    public ArrayList<NhanVien> layTatCaNhanVien() throws LoiCSDL {
+        canQuanLy();
+        return chay(c -> danhSach(c, SQL_NHAN_VIEN + " ORDER BY is_active DESC, role = 'ADMIN' DESC, id",
+                CafeDatabase::docNhanVien));
+    }
+
+    public int themNhanVien(String tenDangNhap, String hoTen, boolean quanLy, String soDienThoai) throws LoiCSDL {
+        canQuanLy();
+        return chay(c -> them(c, "INSERT INTO Users (username, password_hash, full_name, role, phone)"
+                        + " VALUES (?, SHA2(?, 256), ?, ?, ?)",
+                tenDangNhap.trim(), MAT_KHAU_MAC_DINH, hoTen.trim(), quanLy ? "ADMIN" : "STAFF",
+                rongThanhNull(soDienThoai)));
+    }
+
+    public void datLaiMatKhau(int id) throws LoiCSDL {
+        canQuanLy();
+        chay(c -> ghi(c, "UPDATE Users SET password_hash = SHA2(?, 256) WHERE id = ?", MAT_KHAU_MAC_DINH, id));
+    }
+
+    public void khoaTaiKhoan(int id, boolean khoa) throws LoiCSDL {
+        canQuanLy();
+        if (khoa && id == idNguoiDangNhap()) throw new LoiCSDL("Không thể tự khóa tài khoản đang đăng nhập");
+        chay(c -> {
+            if (khoa) {
+                long conLai = so(c, "SELECT COUNT(*) FROM Users WHERE is_active = 1 AND role = 'ADMIN' AND id <> ?", id);
+                long laQuanLy = so(c, "SELECT COUNT(*) FROM Users WHERE id = ? AND role = 'ADMIN'", id);
+                if (laQuanLy > 0 && conLai == 0) throw new LoiCSDL("Phải còn ít nhất một quản lý hoạt động");
+            }
+            return ghi(c, "UPDATE Users SET is_active = ? WHERE id = ?", khoa ? 0 : 1, id);
+        });
+    }
+
+    //BÀN
 
     private static final String SQL_BAN = "SELECT t.id, t.name, t.area, t.seats, t.status,"
             + " o.id, o.guest_count, UNIX_TIMESTAMP(o.created_at) * 1000,"
@@ -185,11 +272,8 @@ public class CafeDatabase {
         return ban;
     }
 
-    /** khuVuc = null để lấy tất cả. */
-    public ArrayList<Ban> layDanhSachBan(String khuVuc) throws LoiCSDL {
-        return chay(c -> khuVuc == null
-                ? danhSach(c, SQL_BAN + " ORDER BY t.id", CafeDatabase::docBan)
-                : danhSach(c, SQL_BAN + " WHERE t.area = ? ORDER BY t.id", CafeDatabase::docBan, khuVuc));
+    public ArrayList<Ban> layDanhSachBan() throws LoiCSDL {
+        return chay(c -> danhSach(c, SQL_BAN + " ORDER BY t.id", CafeDatabase::docBan));
     }
 
     private Ban layBan(Connection c, int banId) throws SQLException, LoiCSDL {
@@ -198,29 +282,20 @@ public class CafeDatabase {
         return ds.get(0);
     }
 
-    /** Khu vực và số bàn trong khu vực. */
-    public LinkedHashMap<String, Integer> layDanhSachKhuVuc() throws LoiCSDL {
-        return chay(c -> {
-            LinkedHashMap<String, Integer> kq = new LinkedHashMap<>();
-            try (PreparedStatement ps = lenh(c, "SELECT area, COUNT(*) FROM `Tables` GROUP BY area ORDER BY area");
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) kq.put(rs.getString(1), rs.getInt(2));
-            }
-            return kq;
-        });
-    }
-
     public void themBan(Ban ban) throws LoiCSDL {
+        canQuanLy();
         chay(c -> them(c, "INSERT INTO `Tables` (name, area, seats) VALUES (?, ?, ?)",
                 ban.getTenBan(), ban.getKhuVuc(), ban.getSoCho()));
     }
 
     public void suaBan(Ban ban) throws LoiCSDL {
+        canQuanLy();
         chay(c -> ghi(c, "UPDATE `Tables` SET name = ?, area = ?, seats = ? WHERE id = ?",
                 ban.getTenBan(), ban.getKhuVuc(), ban.getSoCho(), ban.getId()));
     }
 
     public void xoaBan(int banId) throws LoiCSDL {
+        canQuanLy();
         chay(c -> {
             if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ? AND status = 'OPEN'", banId) > 0) {
                 throw new LoiCSDL("Bàn đang có khách, không thể xóa");
@@ -232,7 +307,6 @@ public class CafeDatabase {
         });
     }
 
-    /** Cập nhật trạng thái bàn bằng tay: chỉ đổi Trống / Đã đặt / Bảo trì khi bàn không có khách. */
     public void capNhatTrangThaiBan(int banId, int trangThai) throws LoiCSDL {
         chay(c -> {
             Ban ban = layBan(c, banId);
@@ -247,30 +321,35 @@ public class CafeDatabase {
         });
     }
 
-    public void doiTenKhuVuc(String tenCu, String tenMoi) throws LoiCSDL {
-        chay(c -> ghi(c, "UPDATE `Tables` SET area = ? WHERE area = ?", tenMoi, tenCu));
+    private int taoOrder(Connection c, int banId, int soKhach, String tenKhach) throws SQLException, LoiCSDL {
+        Integer nhanVien = nhanVien(c);
+        if (banId <= 0) {
+            return them(c, "INSERT INTO Orders (table_id, user_id, guest_count, note) VALUES (NULL, ?, ?, ?)",
+                    nhanVien, soKhach, rongThanhNull(tenKhach));
+        }
+        try (PreparedStatement ps = lenh(c, "SELECT status FROM `Tables` WHERE id = ? FOR UPDATE", banId);
+             ResultSet rs = ps.executeQuery()) {
+            if (!rs.next()) throw new LoiCSDL("Không tìm thấy bàn");
+        }
+        if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ? AND status = 'OPEN'", banId) > 0) {
+            throw new LoiCSDL("Bàn đã có khách");
+        }
+        int hoaDonId = them(c, "INSERT INTO Orders (table_id, user_id, guest_count) VALUES (?, ?, ?)",
+                banId, nhanVien, soKhach);
+        ghi(c, "UPDATE `Tables` SET status = 'SERVING' WHERE id = ?", banId);
+        return hoaDonId;
     }
 
-    /** Mở bàn: tạo đơn gọi món mới, trả về id đơn. */
-    public int moBan(int banId, int soKhach) throws LoiCSDL {
+    public int taoDonHang(int banId, int soKhach, String tenKhach, ArrayList<ChiTietHoaDon> dsMon) throws LoiCSDL {
+        if (dsMon.isEmpty()) throw new LoiCSDL("Giỏ hàng đang trống");
         return giaoDich(c -> {
-            String trangThai;
-            try (PreparedStatement ps = lenh(c, "SELECT status FROM `Tables` WHERE id = ? FOR UPDATE", banId);
-                 ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) throw new LoiCSDL("Không tìm thấy bàn");
-                trangThai = rs.getString(1);
-            }
-            if ("MAINTENANCE".equals(trangThai)) throw new LoiCSDL("Bàn đang bảo trì");
-            if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ? AND status = 'OPEN'", banId) > 0) {
-                throw new LoiCSDL("Bàn đã có khách");
-            }
-            int hoaDonId = them(c, "INSERT INTO Orders (table_id, guest_count) VALUES (?, ?)", banId, soKhach);
-            ghi(c, "UPDATE `Tables` SET status = 'SERVING' WHERE id = ?", banId);
+            int hoaDonId = taoOrder(c, banId, soKhach, tenKhach);
+            themMon(c, hoaDonId, dsMon);
             return hoaDonId;
         });
     }
 
-    // ===================== DANH MỤC =====================
+    //DANH MỤC
 
     public ArrayList<DanhMuc> layDanhSachDanhMuc() throws LoiCSDL {
         return chay(c -> danhSach(c, "SELECT c.id, c.name,"
@@ -279,14 +358,17 @@ public class CafeDatabase {
     }
 
     public DanhMuc themDanhMuc(String ten) throws LoiCSDL {
+        canQuanLy();
         return chay(c -> new DanhMuc(them(c, "INSERT INTO Categories (name) VALUES (?)", ten), ten, 0));
     }
 
     public void doiTenDanhMuc(int id, String tenMoi) throws LoiCSDL {
+        canQuanLy();
         chay(c -> ghi(c, "UPDATE Categories SET name = ? WHERE id = ?", tenMoi, id));
     }
 
     public void xoaDanhMuc(int id) throws LoiCSDL {
+        canQuanLy();
         chay(c -> {
             long soMon = so(c, "SELECT COUNT(*) FROM Drinks WHERE category_id = ?", id);
             if (soMon > 0) {
@@ -296,7 +378,7 @@ public class CafeDatabase {
         });
     }
 
-    // ===================== THỨC UỐNG =====================
+    //THỨC UỐNG
 
     private static final String SQL_THUC_UONG = "SELECT d.id, d.code, d.name, c.name, d.description, d.price,"
             + " d.cost_price, d.image_uri, d.is_available, d.is_best_seller, d.category_id"
@@ -310,9 +392,8 @@ public class CafeDatabase {
         return tu;
     }
 
-    /** danhMucId = 0 để lấy mọi danh mục. */
-    public ArrayList<ThucUong> layDanhSachThucUong(int danhMucId, String tuKhoa, boolean chiMonConBan)
-            throws LoiCSDL {
+    /** Gồm cả món tạm hết (Gọi món hiện làm mờ để nhân viên báo khách). */
+    public ArrayList<ThucUong> layDanhSachThucUong(int danhMucId, String tuKhoa) throws LoiCSDL {
         StringBuilder where = new StringBuilder(" WHERE 1=1");
         ArrayList<Object> thamSo = new ArrayList<>();
         if (danhMucId > 0) {
@@ -324,7 +405,6 @@ public class CafeDatabase {
             thamSo.add("%" + tuKhoa.trim() + "%");
             thamSo.add("%" + tuKhoa.trim() + "%");
         }
-        if (chiMonConBan) where.append(" AND d.is_available = 1");
         String sql = SQL_THUC_UONG + where + " ORDER BY d.is_best_seller DESC, c.id, d.name";
         return chay(c -> danhSach(c, sql, CafeDatabase::docThucUong, thamSo.toArray()));
     }
@@ -348,11 +428,13 @@ public class CafeDatabase {
     }
 
     public void themThucUong(ThucUong tu) throws LoiCSDL {
+        canQuanLy();
         chay(c -> them(c, "INSERT INTO Drinks (category_id, code, name, description, price, cost_price,"
                 + " image_uri, is_available, is_best_seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", giaTriThucUong(tu)));
     }
 
     public void suaThucUong(ThucUong tu) throws LoiCSDL {
+        canQuanLy();
         Object[] giaTri = giaTriThucUong(tu);
         Object[] thamSo = new Object[giaTri.length + 1];
         System.arraycopy(giaTri, 0, thamSo, 0, giaTri.length);
@@ -361,20 +443,24 @@ public class CafeDatabase {
                 + " cost_price = ?, image_uri = ?, is_available = ?, is_best_seller = ? WHERE id = ?", thamSo));
     }
 
-    /** OrderDetails giữ lại tên + giá món nên hóa đơn cũ không bị ảnh hưởng. */
     public void xoaThucUong(int id) throws LoiCSDL {
+        canQuanLy();
         chay(c -> ghi(c, "DELETE FROM Drinks WHERE id = ?", id));
     }
 
-    // ===================== ĐƠN GỌI MÓN / HÓA ĐƠN =====================
+    //ĐƠN GỌI MÓN / HÓA ĐƠN
 
-    private static final String SQL_HOA_DON = "SELECT o.id, o.table_id, t.name, t.area, o.guest_count, o.status,"
+    /** Đơn mang đi (không gắn bàn): tên lấy từ note, không có thì "Mang đi #id". */
+    private static final String SQL_HOA_DON = "SELECT o.id, o.table_id,"
+            + " COALESCE(t.name, NULLIF(o.note, ''), CONCAT('Mang đi #', o.id)),"
+            + " COALESCE(t.area, 'Mang đi / tại quầy'), o.guest_count, o.status,"
             + " UNIX_TIMESTAMP(o.created_at) * 1000, UNIX_TIMESTAMP(o.closed_at) * 1000,"
             + " (SELECT COALESCE(SUM(quantity), 0) FROM OrderDetails WHERE order_id = o.id),"
             + " (SELECT COALESCE(SUM(quantity * unit_price), 0) FROM OrderDetails WHERE order_id = o.id),"
-            + " i.id, i.invoice_code, i.subtotal, i.discount, i.vat, i.total, i.payment_method,"
-            + " i.amount_received, UNIX_TIMESTAMP(i.paid_at) * 1000"
-            + " FROM Orders o JOIN `Tables` t ON t.id = o.table_id LEFT JOIN Invoices i ON i.order_id = o.id";
+            + " i.id, i.invoice_code, i.subtotal, i.discount, i.total, i.payment_method,"
+            + " i.amount_received, UNIX_TIMESTAMP(i.paid_at) * 1000, u.full_name"
+            + " FROM Orders o LEFT JOIN `Tables` t ON t.id = o.table_id LEFT JOIN Invoices i ON i.order_id = o.id"
+            + " LEFT JOIN Users u ON u.id = COALESCE(i.user_id, o.user_id)";
 
     private static HoaDon docHoaDon(ResultSet rs) throws SQLException {
         HoaDon hd = new HoaDon();
@@ -388,21 +474,21 @@ public class CafeDatabase {
                 : "CANCELLED".equals(trangThai) ? HoaDon.DA_HUY : HoaDon.DANG_PHUC_VU);
         hd.setGioVao(rs.getLong(7));
         hd.setSoMon(rs.getInt(9));
+        hd.setTenNhanVien(rs.getString(19));
         rs.getInt(11);
         if (rs.wasNull()) {
             // Chưa có hóa đơn: đang phục vụ hoặc đã hủy
-            hd.setMaHoaDon(String.format(Locale.ROOT, "ORD-%04d", hd.getId()));
+            hd.setMaHoaDon(String.format(Locale.ROOT, "DH%04d", hd.getId()));
             hd.setTamTinh(rs.getLong(10));
             hd.setGioRa(rs.getLong(8));
         } else {
             hd.setMaHoaDon(rs.getString(12));
             hd.setTamTinh(rs.getLong(13));
             hd.setGiamGia(rs.getLong(14));
-            hd.setVat(rs.getLong(15));
-            hd.setTongTien(rs.getLong(16));
-            hd.setPhuongThuc(HoaDon.tenPhuongThuc(rs.getString(17)));
-            hd.setKhachDua(rs.getLong(18));
-            hd.setGioRa(rs.getLong(19));
+            hd.setTongTien(rs.getLong(15));
+            hd.setPhuongThuc(HoaDon.tenPhuongThuc(rs.getString(16)));
+            hd.setKhachDua(rs.getLong(17));
+            hd.setGioRa(rs.getLong(18));
         }
         return hd;
     }
@@ -417,28 +503,31 @@ public class CafeDatabase {
         return chay(c -> layHoaDon(c, id));
     }
 
-    /** trangThai = -1 để lấy tất cả; denNgay = 0 để không lọc thời gian (lọc theo giờ thanh toán / đóng / mở). */
-    public ArrayList<HoaDon> layDanhSachHoaDon(int trangThai, long tuNgay, long denNgay) throws LoiCSDL {
-        StringBuilder where = new StringBuilder(" WHERE 1=1");
+    /** Các đơn đang phục vụ (chưa thanh toán / chưa hủy), mới nhất lên đầu. */
+    public ArrayList<HoaDon> layDonDangPhucVu() throws LoiCSDL {
+        return chay(c -> danhSach(c, SQL_HOA_DON + " WHERE o.status = 'OPEN' ORDER BY o.created_at DESC",
+                CafeDatabase::docHoaDon));
+    }
+
+    public ArrayList<HoaDon> timHoaDonDaThanhToan(String tuKhoa, long tuNgay, long denNgay, int gioiHan)
+            throws LoiCSDL {
+        StringBuilder sql = new StringBuilder(SQL_HOA_DON).append(" WHERE o.status = 'PAID'");
         ArrayList<Object> thamSo = new ArrayList<>();
-        if (trangThai >= 0) {
-            where.append(" AND o.status = ?");
-            thamSo.add(trangThai == HoaDon.DA_THANH_TOAN ? "PAID"
-                    : trangThai == HoaDon.DA_HUY ? "CANCELLED" : "OPEN");
+        if (tuKhoa != null && !tuKhoa.trim().isEmpty()) {
+            String k = "%" + tuKhoa.trim().replace("#", "") + "%";
+            sql.append(" AND (i.invoice_code LIKE ? OR t.name LIKE ? OR o.note LIKE ?)");
+            thamSo.add(k);
+            thamSo.add(k);
+            thamSo.add(k);
         }
         if (denNgay > 0) {
-            where.append(" AND COALESCE(i.paid_at, o.closed_at, o.created_at) >= FROM_UNIXTIME(?)"
-                    + " AND COALESCE(i.paid_at, o.closed_at, o.created_at) < FROM_UNIXTIME(?)");
+            sql.append(" AND i.paid_at >= FROM_UNIXTIME(?) AND i.paid_at < FROM_UNIXTIME(?)");
             thamSo.add(tuNgay / 1000);
             thamSo.add(denNgay / 1000);
         }
-        String sql = SQL_HOA_DON + where
-                + " ORDER BY o.status = 'OPEN' DESC, COALESCE(i.paid_at, o.closed_at, o.created_at) DESC";
-        return chay(c -> danhSach(c, sql, CafeDatabase::docHoaDon, thamSo.toArray()));
-    }
-
-    public ArrayList<HoaDon> layHoaDonDaThanhToan(long tuNgay, long denNgay) throws LoiCSDL {
-        return layDanhSachHoaDon(HoaDon.DA_THANH_TOAN, tuNgay, denNgay);
+        sql.append(" ORDER BY i.paid_at DESC, i.id DESC");
+        if (gioiHan > 0) sql.append(" LIMIT ").append(gioiHan);
+        return chay(c -> danhSach(c, sql.toString(), CafeDatabase::docHoaDon, thamSo.toArray()));
     }
 
     public ArrayList<ChiTietHoaDon> layChiTietHoaDon(int hoaDonId) throws LoiCSDL {
@@ -463,7 +552,6 @@ public class CafeDatabase {
         }, hoaDonId));
     }
 
-    /** Khóa dòng đơn để cập nhật an toàn trong transaction; báo lỗi nếu đơn đã đóng. Trả về {id bàn, số khách}. */
     private static int[] khoaDonDangMo(Connection c, int hoaDonId) throws SQLException, LoiCSDL {
         try (PreparedStatement ps = lenh(c, "SELECT status, table_id, guest_count FROM Orders WHERE id = ? FOR UPDATE",
                 hoaDonId); ResultSet rs = ps.executeQuery()) {
@@ -473,42 +561,44 @@ public class CafeDatabase {
         }
     }
 
-    /** Đơn chứa dòng chi tiết này phải còn đang mở. */
     private static void kiemTraDongMon(Connection c, int chiTietId) throws SQLException, LoiCSDL {
         long hoaDonId = so(c, "SELECT order_id FROM OrderDetails WHERE id = ?", chiTietId);
         if (hoaDonId == 0) throw new LoiCSDL("Không tìm thấy món trong đơn");
         khoaDonDangMo(c, (int) hoaDonId);
     }
 
-    /** Gửi các món trong giỏ xuống quầy Bar; gộp với dòng đang pha chế cùng món + ghi chú + giá. */
     public void themMonVaoHoaDon(int hoaDonId, ArrayList<ChiTietHoaDon> dsMon) throws LoiCSDL {
         giaoDich(c -> {
             khoaDonDangMo(c, hoaDonId);
-            for (ChiTietHoaDon ct : dsMon) {
-                String ten;
-                long gia;
-                try (PreparedStatement ps = lenh(c, "SELECT name, price, is_available FROM Drinks WHERE id = ?",
-                        ct.getThucUongId()); ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) throw new LoiCSDL("Món không còn trong thực đơn");
-                    ten = rs.getString(1);
-                    gia = rs.getLong(2);
-                    if (rs.getInt(3) != 1) throw new LoiCSDL(ten + " đang tạm hết");
-                }
-                String ghiChu = ct.getGhiChu() == null ? "" : ct.getGhiChu();
-                long dongCu = so(c, "SELECT id FROM OrderDetails WHERE order_id = ? AND drink_id = ? AND note = ?"
-                        + " AND status = 'PREPARING' AND unit_price = ?", hoaDonId, ct.getThucUongId(), ghiChu, gia);
-                if (dongCu > 0) {
-                    ghi(c, "UPDATE OrderDetails SET quantity = quantity + ? WHERE id = ?", ct.getSoLuong(), dongCu);
-                } else {
-                    them(c, "INSERT INTO OrderDetails (order_id, drink_id, drink_name, unit_price, quantity, note)"
-                            + " VALUES (?, ?, ?, ?, ?, ?)", hoaDonId, ct.getThucUongId(), ten, gia, ct.getSoLuong(), ghiChu);
-                }
-            }
+            themMon(c, hoaDonId, dsMon);
             return null;
         });
     }
 
-    /** soLuong = 0 thì bỏ món. */
+    private static void themMon(Connection c, int hoaDonId, ArrayList<ChiTietHoaDon> dsMon)
+            throws SQLException, LoiCSDL {
+        for (ChiTietHoaDon ct : dsMon) {
+            String ten;
+            long gia;
+            try (PreparedStatement ps = lenh(c, "SELECT name, price, is_available FROM Drinks WHERE id = ?",
+                    ct.getThucUongId()); ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) throw new LoiCSDL("Món không còn trong thực đơn");
+                ten = rs.getString(1);
+                gia = rs.getLong(2);
+                if (rs.getInt(3) != 1) throw new LoiCSDL(ten + " đang tạm hết");
+            }
+            String ghiChu = ct.getGhiChu() == null ? "" : ct.getGhiChu();
+            long dongCu = so(c, "SELECT id FROM OrderDetails WHERE order_id = ? AND drink_id = ? AND note = ?"
+                    + " AND status = 'PREPARING' AND unit_price = ?", hoaDonId, ct.getThucUongId(), ghiChu, gia);
+            if (dongCu > 0) {
+                ghi(c, "UPDATE OrderDetails SET quantity = quantity + ? WHERE id = ?", ct.getSoLuong(), dongCu);
+            } else {
+                them(c, "INSERT INTO OrderDetails (order_id, drink_id, drink_name, unit_price, quantity, note)"
+                        + " VALUES (?, ?, ?, ?, ?, ?)", hoaDonId, ct.getThucUongId(), ten, gia, ct.getSoLuong(), ghiChu);
+            }
+        }
+    }
+
     public void capNhatSoLuong(int chiTietId, int soLuong) throws LoiCSDL {
         giaoDich(c -> {
             kiemTraDongMon(c, chiTietId);
@@ -530,7 +620,6 @@ public class CafeDatabase {
         capNhatSoLuong(chiTietId, 0);
     }
 
-    /** In tạm tính: bàn chuyển sang "Chờ thanh toán". */
     public void yeuCauThanhToan(int hoaDonId) throws LoiCSDL {
         giaoDich(c -> ghi(c, "UPDATE `Tables` SET status = 'WAITING_PAYMENT' WHERE id = ?",
                 khoaDonDangMo(c, hoaDonId)[0]));
@@ -544,12 +633,11 @@ public class CafeDatabase {
         });
     }
 
-    /** Đổi bàn: chuyển đơn sang bàn trống khác, bàn cũ thành trống. */
     public void doiBan(int hoaDonId, int banMoiId) throws LoiCSDL {
         giaoDich(c -> {
             int banCu = khoaDonDangMo(c, hoaDonId)[0];
             Ban moi = layBan(c, banMoiId);
-            if (!moi.isTrong() || moi.getTrangThai() == Ban.BAO_TRI) throw new LoiCSDL("Bàn mới không trống");
+            if (moi.isCoNguoi()) throw new LoiCSDL("Bàn mới không trống");
             Ban cu = layBan(c, banCu);
             ghi(c, "UPDATE Orders SET table_id = ? WHERE id = ?", banMoiId, hoaDonId);
             ghi(c, "UPDATE `Tables` SET status = ? WHERE id = ?", Ban.maTrangThai(cu.getTrangThai()), banMoiId);
@@ -557,7 +645,6 @@ public class CafeDatabase {
         });
     }
 
-    /** Gộp bàn: chuyển toàn bộ món của đơn nguồn sang đơn đích, bàn nguồn thành trống. */
     public void gopBan(int hoaDonNguonId, int hoaDonDichId) throws LoiCSDL {
         if (hoaDonNguonId == hoaDonDichId) throw new LoiCSDL("Không thể gộp vào chính nó");
         giaoDich(c -> {
@@ -570,11 +657,6 @@ public class CafeDatabase {
         });
     }
 
-    /**
-     * Tạo hóa đơn & xác nhận thanh toán trong một transaction:
-     * tạm tính lấy lại từ OrderDetails -> trừ giảm giá -> cộng VAT 8% -> làm tròn tới nghìn đồng.
-     * Sau đó đơn chuyển "Đã thanh toán", bàn trở về trống.
-     */
     public HoaDon thanhToan(int hoaDonId, long giamGia, String phuongThuc, long khachDua) throws LoiCSDL {
         String maPhuongThuc = HoaDon.maPhuongThuc(phuongThuc);
         return giaoDich(c -> {
@@ -583,32 +665,18 @@ public class CafeDatabase {
                     hoaDonId);
             if (tamTinh <= 0) throw new LoiCSDL("Đơn chưa có món để thanh toán");
             long giam = Math.max(0, Math.min(giamGia, tamTinh));
-            long vat = Math.round((tamTinh - giam) * THUE_VAT);
-            long tong = TienIch.lamTron(tamTinh - giam + vat);
+            long tong = TienIch.lamTron(tamTinh - giam);
             long nhan = "CASH".equals(maPhuongThuc) ? khachDua : tong;
             if (nhan < tong) throw new LoiCSDL("Khách đưa chưa đủ tiền");
 
-            int hoaDonMoi = them(c, "INSERT INTO Invoices (order_id, subtotal, discount, vat, total, payment_method,"
-                            + " amount_received, change_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    hoaDonId, tamTinh, giam, vat, tong, maPhuongThuc, nhan, nhan - tong);
-            ghi(c, "UPDATE Invoices SET invoice_code = CONCAT('HD', DATE_FORMAT(paid_at, '%Y%m%d'), '-',"
-                    + " LPAD(id, 4, '0')) WHERE id = ?", hoaDonMoi);
+            int hoaDonMoi = them(c, "INSERT INTO Invoices (order_id, user_id, subtotal, discount, total,"
+                            + " payment_method, amount_received, change_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    hoaDonId, nhanVien(c), tamTinh, giam, tong, maPhuongThuc, nhan, nhan - tong);
+            ghi(c, "UPDATE Invoices SET invoice_code = CONCAT('HD', LPAD(id, 4, '0')) WHERE id = ?", hoaDonMoi);
             ghi(c, "UPDATE Orders SET status = 'PAID', closed_at = NOW() WHERE id = ?", hoaDonId);
             ghi(c, "UPDATE OrderDetails SET status = 'SERVED' WHERE order_id = ?", hoaDonId);
-            ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", banId);
+            if (banId > 0) ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", banId);
             return layHoaDon(c, hoaDonId);
         });
-    }
-
-    // ===================== BÁO CÁO =====================
-
-    /** Mỗi phần tử: {tên món, số lượng, doanh thu}. */
-    public ArrayList<Object[]> layMonBanChay(long tuNgay, long denNgay, int gioiHan) throws LoiCSDL {
-        return chay(c -> danhSach(c, "SELECT od.drink_name, SUM(od.quantity) AS sl, SUM(od.quantity * od.unit_price) AS dt"
-                        + " FROM OrderDetails od JOIN Invoices i ON i.order_id = od.order_id"
-                        + " WHERE i.paid_at >= FROM_UNIXTIME(?) AND i.paid_at < FROM_UNIXTIME(?)"
-                        + " GROUP BY od.drink_name ORDER BY sl DESC, dt DESC LIMIT ?",
-                rs -> new Object[]{rs.getString(1), rs.getInt(2), rs.getLong(3)},
-                tuNgay / 1000, denNgay / 1000, gioiHan));
     }
 }

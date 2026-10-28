@@ -1,24 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Theme theo design system "Espresso POS" (thư mục stitch) -->
     <style name="Base.Theme.App_QuanLyCafe" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/espresso</item>
+        <item name="colorPrimary">@color/forest_green</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/caramel</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="colorPrimaryContainer">@color/caramel_soft</item>
+        <item name="colorSecondary">@color/mint_header</item>
+        <item name="colorOnSecondary">@color/forest_green</item>
+        <item name="colorPrimaryContainer">@color/mint_sidebar</item>
         <item name="colorOnPrimaryContainer">@color/espresso</item>
-        <item name="colorSecondaryContainer">@color/caramel_soft</item>
+        <item name="colorSecondaryContainer">@color/mint_sidebar</item>
         <item name="colorOnSecondaryContainer">@color/espresso</item>
         <item name="colorSurface">@color/canvas</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:colorBackground">@color/canvas</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/canvas</item>
+        <item name="android:navigationBarColor">@color/card</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowAnimationStyle">@style/HieuUngChuyenMan</item>
     </style>
 
     <style name="Theme.App_QuanLyCafe" parent="Base.Theme.App_QuanLyCafe" />
 
+    <!-- Mở / đóng màn hình con: trượt nhẹ + mờ dần (đổi tab dưới dùng hiệu ứng riêng trong DieuHuong) -->
+    <style name="HieuUngChuyenMan" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/man_mo_vao</item>
+        <item name="android:activityOpenExitAnimation">@anim/man_mo_ra</item>
+        <item name="android:activityCloseEnterAnimation">@anim/man_dong_vao</item>
+        <item name="android:activityCloseExitAnimation">@anim/man_dong_ra</item>
+    </style>
+
     <style name="ChiBaoDieuHuong" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/caramel_soft</item>
+        <item name="android:color">@color/mint_sidebar</item>
     </style>
 
     <!-- Kiểu chữ -->
@@ -56,20 +68,21 @@
     <style name="TheCard">
         <item name="android:background">@drawable/bg_card</item>
         <item name="android:padding">16dp</item>
+        <item name="android:elevation">2dp</item>
     </style>
 
     <!-- Chip lọc (RadioButton dạng pill) -->
     <style name="ChipLoc">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_height">38dp</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:background">@drawable/bg_chip</item>
         <item name="android:button">@null</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingStart">18dp</item>
-        <item name="android:paddingEnd">18dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
         <item name="android:textColor">@color/text_chip</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -91,18 +104,20 @@
     </style>
 
     <style name="NutChinh" parent="Widget.Material3.Button">
-        <item name="android:minHeight">56dp</item>
-        <item name="backgroundTint">@color/caramel</item>
+        <item name="android:stateListAnimator">@animator/nhan_nut</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="backgroundTint">@color/forest_green</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="cornerRadius">16dp</item>
+        <item name="cornerRadius">14dp</item>
         <item name="iconTint">@color/white</item>
     </style>
 
     <style name="NutPhu" parent="Widget.Material3.Button">
+        <item name="android:stateListAnimator">@animator/nhan_nut</item>
         <item name="android:minHeight">48dp</item>
-        <item name="backgroundTint">@color/latte_dark</item>
+        <item name="backgroundTint">@color/mint_sidebar</item>
         <item name="android:textColor">@color/espresso</item>
         <item name="android:textStyle">bold</item>
         <item name="cornerRadius">16dp</item>
@@ -110,15 +125,53 @@
     </style>
 
     <style name="NutToi" parent="Widget.Material3.Button">
+        <item name="android:stateListAnimator">@animator/nhan_nut</item>
         <item name="android:minHeight">48dp</item>
-        <item name="backgroundTint">@color/espresso_dark</item>
+        <item name="backgroundTint">@color/forest_green</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="cornerRadius">14dp</item>
         <item name="iconTint">@color/white</item>
     </style>
 
+    <!-- Nút viền xanh mint (Xem chi tiết hóa đơn...) -->
+    <style name="NutVien" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:stateListAnimator">@animator/nhan_nut</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textColor">@color/forest_green</item>
+        <item name="android:textSize">15sp</item>
+        <item name="strokeColor">@color/mint_border</item>
+        <item name="backgroundTint">@color/card</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="iconTint">@color/forest_green</item>
+    </style>
+
+    <!-- Tiêu đề mục: "Thao tác nhanh", "Bàn đang phục vụ"... -->
+    <style name="TieuDeMuc">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/forest_green</item>
+    </style>
+
+    <!-- Liên kết "Xem tất cả" -->
+    <style name="LienKet">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/mint_accent</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <!-- Nút tròn có icon trên thanh tiêu đề -->
+    <style name="NutIconTieuDe">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="tint">@color/forest_green</item>
+    </style>
+
     <style name="NutNguyHiem" parent="Widget.Material3.Button">
+        <item name="android:stateListAnimator">@animator/nhan_nut</item>
         <item name="android:minHeight">48dp</item>
         <item name="backgroundTint">@color/status_red_bg</item>
         <item name="android:textColor">@color/status_red</item>
