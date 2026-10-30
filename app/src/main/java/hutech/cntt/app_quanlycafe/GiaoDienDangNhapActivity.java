@@ -1,6 +1,9 @@
 package hutech.cntt.app_quanlycafe;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -8,12 +11,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
 import hutech.cntt.app_quanlycafe.data.CafeDatabase;
-import hutech.cntt.app_quanlycafe.data.ChayNen;
+import hutech.cntt.app_quanlycafe.data.CafeDatabase.ChayNen;
 import hutech.cntt.app_quanlycafe.data.DieuHuong;
 
 
@@ -47,6 +52,27 @@ public class GiaoDienDangNhapActivity extends AppCompatActivity {
             return true;
         });
 
+        // Android 17+ (API 37): app phải được cấp quyền mạng cục bộ mới gọi được API trên máy tính
+        // (10.0.2.2 của máy ảo / IP máy tính trong Wi-Fi)
+        if (Build.VERSION.SDK_INT >= 37
+                && checkSelfPermission(Manifest.permission.ACCESS_LOCAL_NETWORK) != PackageManager.PERMISSION_GRANTED) {
+            xinQuyenMangCucBo.launch(Manifest.permission.ACCESS_LOCAL_NETWORK);
+        } else {
+            batDau();
+        }
+    }
+
+    private final ActivityResultLauncher<String> xinQuyenMangCucBo =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), duocCap -> {
+                if (duocCap) {
+                    batDau();
+                } else {
+                    hienThiLoi("Chưa cấp quyền \"Thiết bị ở gần / mạng cục bộ\" nên app không kết nối được máy chủ."
+                            + " Hãy cấp quyền trong Cài đặt của Android rồi mở lại app.");
+                }
+            });
+
+    private void batDau() {
         if (db.daDangNhap()) kiemTraPhienCu();
     }
 

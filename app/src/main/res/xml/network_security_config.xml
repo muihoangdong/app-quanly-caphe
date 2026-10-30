@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API PHP chạy HTTP (không HTTPS) trên máy tính: máy ảo gọi 10.0.2.2,
+     điện thoại thật gọi IP máy tính trong mạng Wi-Fi nên cho phép HTTP chung -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

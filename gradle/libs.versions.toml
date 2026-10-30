@@ -8,10 +8,11 @@ material = "1.14.0"
 activityKtx = "1.13.0"
 constraintlayout = "2.2.2"
 gridlayout = "1.1.0"
-mysqlConnector = "5.1.49"
+retrofit = "2.11.0"
 
 [libraries]
-mysql-connector = { group = "mysql", name = "mysql-connector-java", version.ref = "mysqlConnector" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

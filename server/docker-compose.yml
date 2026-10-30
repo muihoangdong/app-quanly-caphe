@@ -1,5 +1,7 @@
 # Chạy: docker compose up -d   (trong thư mục server)
-# MySQL: localhost:3307 (app Android + DBeaver; 3307 để không trùng MySQL khác trên máy)
+# API PHP: http://localhost:8080  (máy ảo Android gọi http://10.0.2.2:8080)
+# MySQL: localhost:3307 (DBeaver; 3307 để không trùng MySQL khác trên máy)
+# App Android -> API PHP (thư mục ./api) -> MySQL
 name: quanlycafe
 
 services:
@@ -26,6 +28,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+  api:
+    image: php:8.3-apache
+    container_name: quanlycafe-api
+    restart: unless-stopped
+    # Cài pdo_mysql rồi chạy Apache (cổng 80 trong container)
+    command: sh -c "docker-php-ext-install pdo_mysql >/dev/null && apache2-foreground"
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql_data:

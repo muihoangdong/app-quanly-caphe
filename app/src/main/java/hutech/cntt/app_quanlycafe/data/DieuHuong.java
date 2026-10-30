@@ -26,6 +26,7 @@ import hutech.cntt.app_quanlycafe.GiaoDienOrderActivity;
 import hutech.cntt.app_quanlycafe.GiaoDienThucDonActivity;
 import hutech.cntt.app_quanlycafe.GiaoDienTrangChuActivity;
 import hutech.cntt.app_quanlycafe.R;
+import hutech.cntt.app_quanlycafe.data.CafeDatabase.ChayNen;
 
 public class DieuHuong {
 
@@ -196,10 +197,9 @@ public class DieuHuong {
         khung.addView(edt);
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle("Địa chỉ MySQL (host:cổng)")
-                .setMessage("Mặc định: " + KetNoiMySQL.DIA_CHI_MAC_DINH
-                        + " (máy ảo / điện thoại cắm USB, Android Studio tự chạy adb reverse khi bấm Run)"
-                        + "\nĐiện thoại cùng Wi-Fi: <IP máy tính>:3307")
+                .setTitle("Địa chỉ máy chủ API (host:cổng)")
+                .setMessage("Mặc định: " + ApiClient.DIA_CHI_MAC_DINH + " (máy ảo Android)"
+                        + "\nĐiện thoại cùng Wi-Fi: <IP máy tính>:8080")
                 .setView(khung)
                 .setNegativeButton("Hủy", null)
                 .setNeutralButton("Mặc định", null)
@@ -207,12 +207,12 @@ public class DieuHuong {
                 .create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
-            edt.setText(KetNoiMySQL.DIA_CHI_MAC_DINH);
+            edt.setText(ApiClient.DIA_CHI_MAC_DINH);
             edt.setSelection(edt.length());
         });
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (edt.getText().toString().trim().isEmpty()) {
-                edt.setError("Nhập địa chỉ MySQL");
+                edt.setError("Nhập địa chỉ máy chủ");
                 return;
             }
             db.getKetNoi().luuDiaChi(edt.getText().toString());
@@ -220,7 +220,7 @@ public class DieuHuong {
                 db.kiemTraKetNoi();
                 return true;
             }, ok -> {
-                Toast.makeText(activity, "Kết nối MySQL thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Kết nối máy chủ thành công", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 if (sauKhiLuu != null) sauKhiLuu.run();
             }, loi -> edt.setError(loi));

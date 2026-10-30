@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import hutech.cntt.app_quanlycafe.adapter.BanAdapter;
 import hutech.cntt.app_quanlycafe.data.CafeDatabase;
-import hutech.cntt.app_quanlycafe.data.ChayNen;
+import hutech.cntt.app_quanlycafe.data.CafeDatabase.ChayNen;
 import hutech.cntt.app_quanlycafe.data.DieuHuong;
 import hutech.cntt.app_quanlycafe.model.Ban;
 

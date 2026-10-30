@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import hutech.cntt.app_quanlycafe.adapter.DongAdapter;
 import hutech.cntt.app_quanlycafe.data.CafeDatabase;
-import hutech.cntt.app_quanlycafe.data.ChayNen;
+import hutech.cntt.app_quanlycafe.data.CafeDatabase.ChayNen;
 import hutech.cntt.app_quanlycafe.data.DieuHuong;
 import hutech.cntt.app_quanlycafe.model.NhanVien;
 

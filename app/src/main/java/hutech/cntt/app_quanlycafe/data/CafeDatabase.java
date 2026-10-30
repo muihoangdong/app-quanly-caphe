@@ -1,38 +1,56 @@
 package hutech.cntt.app_quanlycafe.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import hutech.cntt.app_quanlycafe.data.KetNoiMySQL.LoiCSDL;
+import hutech.cntt.app_quanlycafe.data.ApiClient.ApiResponse;
+import hutech.cntt.app_quanlycafe.data.ApiClient.LoiCSDL;
 import hutech.cntt.app_quanlycafe.model.Ban;
 import hutech.cntt.app_quanlycafe.model.ChiTietHoaDon;
 import hutech.cntt.app_quanlycafe.model.DanhMuc;
 import hutech.cntt.app_quanlycafe.model.HoaDon;
 import hutech.cntt.app_quanlycafe.model.NhanVien;
 import hutech.cntt.app_quanlycafe.model.ThucUong;
+import retrofit2.Response;
 
-
+/**
+ * Lớp dữ liệu của app: gọi API PHP (server/api) qua Retrofit, đổi JSON thành model.
+ * Các hàm chạy đồng bộ (execute) nên phải gọi trong ChayNen, không gọi trên luồng giao diện.
+ */
 public class CafeDatabase {
 
     private static final String TEN_FILE = "phien_lam_viec";
     private static final String KHOA_NHAN_VIEN = "nhan_vien_id";
     private static final String KHOA_QUAN_LY = "la_quan_ly";
+    private static final String KHOA_TOKEN = "token";
 
     public static final String CD_TEN_QUAN = "shop_name";
     public static final String CD_TAI_KHOAN = "bank_account";
 
     private static CafeDatabase instance;
-    private final KetNoiMySQL ketNoi;
+    private final ApiClient ketNoi;
     private final Context context;
+    private final Gson gson = new Gson();
 
     public static synchronized CafeDatabase getInstance(Context context) {
         if (instance == null) instance = new CafeDatabase(context);
@@ -41,121 +59,109 @@ public class CafeDatabase {
 
     private CafeDatabase(Context context) {
         this.context = context.getApplicationContext();
-        ketNoi = new KetNoiMySQL(this.context);
+        ketNoi = new ApiClient(this.context);
     }
 
-    public KetNoiMySQL getKetNoi() {
+    public ApiClient getKetNoi() {
         return ketNoi;
     }
 
+    // ===================== GỌI API =====================
 
-
-    private interface CongViec<T> {
-        T lam(Connection c) throws SQLException, LoiCSDL;
+    /** Tạo body JSON từ các cặp khóa, giá trị. */
+    private JsonObject thamSo(Object... cap) {
+        JsonObject o = new JsonObject();
+        for (int i = 0; i + 1 < cap.length; i += 2) o.add((String) cap[i], gson.toJsonTree(cap[i + 1]));
+        return o;
     }
 
-
-    private <T> T chay(CongViec<T> congViec) throws LoiCSDL {
-        try (Connection c = ketNoi.moKetNoi()) {
-            return congViec.lam(c);
-        } catch (SQLException e) {
-            throw KetNoiMySQL.dichLoi(e);
+    /** Gọi một action của API, trả về phần "data". Lỗi mạng / lỗi nghiệp vụ đổi thành LoiCSDL. */
+    private JsonElement goi(String tep, String action, Object... cap) throws LoiCSDL {
+        JsonObject body = thamSo(cap);
+        body.addProperty("action", action);
+        Response<ApiResponse> phanHoi;
+        try {
+            phanHoi = ketNoi.getApiService().goi(tep, phien().getString(KHOA_TOKEN, ""), body).execute();
+        } catch (IOException e) {
+            Log.w("CafeDatabase", "Không gọi được " + tep + " " + action, e);
+            throw new LoiCSDL("Không kết nối được máy chủ " + ketNoi.layDiaChi()
+                    + ".\nKiểm tra Docker (MySQL + API) đã chạy và địa chỉ máy chủ còn đúng.");
+        } catch (RuntimeException e) {
+            Log.w("CafeDatabase", "Dữ liệu lỗi từ " + tep + " " + action, e);
+            throw new LoiCSDL("Máy chủ trả dữ liệu không hợp lệ");
         }
+        ApiResponse kq = phanHoi.body();
+        if (phanHoi.isSuccessful() && kq != null && kq.isSuccess()) return kq.getData();
+        throw new LoiCSDL(thongBaoLoi(phanHoi), phanHoi.code());
     }
 
-
-    private <T> T giaoDich(CongViec<T> congViec) throws LoiCSDL {
-        try (Connection c = ketNoi.moKetNoi()) {
-            c.setAutoCommit(false);
-            try {
-                T kq = congViec.lam(c);
-                c.commit();
-                return kq;
-            } catch (SQLException | LoiCSDL | RuntimeException e) {
-                c.rollback();
-                throw e;
+    /** Lấy "message" trong JSON lỗi của API; không đọc được thì báo mã HTTP. */
+    private static String thongBaoLoi(Response<ApiResponse> phanHoi) {
+        if (phanHoi.body() != null && phanHoi.body().getMessage() != null) return phanHoi.body().getMessage();
+        try {
+            if (phanHoi.errorBody() != null) {
+                JsonObject loi = JsonParser.parseString(phanHoi.errorBody().string()).getAsJsonObject();
+                if (loi.has("message")) return loi.get("message").getAsString();
             }
-        } catch (SQLException e) {
-            throw KetNoiMySQL.dichLoi(e);
+        } catch (IOException | RuntimeException e) {
+            Log.w("CafeDatabase", "Không đọc được nội dung lỗi", e);
         }
+        return "Lỗi máy chủ (HTTP " + phanHoi.code() + ")";
     }
 
-    private static PreparedStatement lenh(Connection c, String sql, Object... thamSo) throws SQLException {
-        PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        for (int i = 0; i < thamSo.length; i++) ps.setObject(i + 1, thamSo[i]);
-        return ps;
-    }
-
-
-    private static int ghi(Connection c, String sql, Object... thamSo) throws SQLException {
-        try (PreparedStatement ps = lenh(c, sql, thamSo)) {
-            return ps.executeUpdate();
-        }
-    }
-
-
-    private static int them(Connection c, String sql, Object... thamSo) throws SQLException {
-        try (PreparedStatement ps = lenh(c, sql, thamSo)) {
-            ps.executeUpdate();
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                return rs.next() ? rs.getInt(1) : 0;
-            }
-        }
-    }
-
-    private static long so(Connection c, String sql, Object... thamSo) throws SQLException {
-        try (PreparedStatement ps = lenh(c, sql, thamSo); ResultSet rs = ps.executeQuery()) {
-            return rs.next() ? rs.getLong(1) : 0;
-        }
-    }
-
-    private interface DocDong<T> {
-        T doc(ResultSet rs) throws SQLException;
-    }
-
-    private static <T> ArrayList<T> danhSach(Connection c, String sql, DocDong<T> docDong, Object... thamSo)
-            throws SQLException {
-        ArrayList<T> ds = new ArrayList<>();
-        try (PreparedStatement ps = lenh(c, sql, thamSo); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) ds.add(docDong.doc(rs));
+    private static ArrayList<JsonObject> cacDong(JsonElement data) {
+        ArrayList<JsonObject> ds = new ArrayList<>();
+        if (data != null && data.isJsonArray()) {
+            for (JsonElement e : data.getAsJsonArray()) ds.add(e.getAsJsonObject());
         }
         return ds;
     }
 
+    // ----- Đọc giá trị trong JSON (cột NULL thì trả 0 / null) -----
 
-
-    public void kiemTraKetNoi() throws LoiCSDL {
-        chay(c -> so(c, "SELECT 1"));
+    private static boolean coGiaTri(JsonObject o, String khoa) {
+        return o.has(khoa) && !o.get(khoa).isJsonNull();
     }
 
+    private static String chuoi(JsonObject o, String khoa) {
+        return coGiaTri(o, khoa) ? o.get(khoa).getAsString() : null;
+    }
+
+    /** SUM / UNIX_TIMESTAMP có thể về dạng chuỗi số, nên đọc qua BigDecimal. */
+    private static long so(JsonObject o, String khoa) {
+        return coGiaTri(o, khoa) ? new BigDecimal(o.get(khoa).getAsString()).longValue() : 0;
+    }
+
+    private static int nguyen(JsonObject o, String khoa) {
+        return (int) so(o, khoa);
+    }
+
+    private static boolean dung(JsonObject o, String khoa) {
+        return so(o, khoa) != 0;
+    }
+
+    public void kiemTraKetNoi() throws LoiCSDL {
+        goi("cauhinh.php", "kiemTra");
+    }
 
     //CẤU HÌNH QUÁN (Settings)
 
     public LinkedHashMap<String, String> layCauHinh() throws LoiCSDL {
-        return chay(c -> {
-            LinkedHashMap<String, String> kq = new LinkedHashMap<>();
-            kq.put(CD_TEN_QUAN, "Espresso POS");
-            kq.put(CD_TAI_KHOAN, "");
-            try (PreparedStatement ps = lenh(c, "SELECT setting_key, setting_value FROM Settings");
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) kq.put(rs.getString(1), rs.getString(2));
-            }
-            return kq;
-        });
+        LinkedHashMap<String, String> kq = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> e : goi("cauhinh.php", "lay").getAsJsonObject().entrySet()) {
+            kq.put(e.getKey(), e.getValue().isJsonNull() ? "" : e.getValue().getAsString());
+        }
+        return kq;
     }
 
     //NHÂN VIÊN (Users)
 
     public static final String MAT_KHAU_MAC_DINH = "123456";
 
-    private static final String SQL_NHAN_VIEN =
-            "SELECT id, username, full_name, role, is_active FROM Users";
-
-    private static NhanVien docNhanVien(ResultSet rs) throws SQLException {
-        return new NhanVien(rs.getInt(1), rs.getString(2), rs.getString(3),
-                "ADMIN".equals(rs.getString(4)), rs.getInt(5) == 1);
+    private static NhanVien docNhanVien(JsonObject o) {
+        return new NhanVien(nguyen(o, "id"), chuoi(o, "tenDangNhap"), chuoi(o, "hoTen"),
+                dung(o, "quanLy"), dung(o, "hoatDong"));
     }
-
 
     private SharedPreferences phien() {
         return context.getSharedPreferences(TEN_FILE, Context.MODE_PRIVATE);
@@ -165,8 +171,9 @@ public class CafeDatabase {
         phien().edit().putInt(KHOA_NHAN_VIEN, nv.getId()).putBoolean(KHOA_QUAN_LY, nv.isQuanLy()).apply();
     }
 
+    /** Phiên cũ (bản kết nối thẳng MySQL) không có token thì coi như chưa đăng nhập. */
     public boolean daDangNhap() {
-        return idNguoiDangNhap() > 0;
+        return idNguoiDangNhap() > 0 && !phien().getString(KHOA_TOKEN, "").isEmpty();
     }
 
     public int idNguoiDangNhap() {
@@ -177,443 +184,272 @@ public class CafeDatabase {
         return daDangNhap() && phien().getBoolean(KHOA_QUAN_LY, false);
     }
 
-    private void canQuanLy() throws LoiCSDL {
-        if (!laQuanLy()) throw new LoiCSDL("Chỉ quản lý mới được thực hiện thao tác này");
-    }
-
     public NhanVien dangNhap(String tenDangNhap, String matKhau) throws LoiCSDL {
-        ArrayList<NhanVien> ds = chay(c -> danhSach(c, SQL_NHAN_VIEN
-                        + " WHERE username = ? AND password_hash = SHA2(?, 256)",
-                CafeDatabase::docNhanVien, tenDangNhap.trim(), matKhau));
-        if (ds.isEmpty()) throw new LoiCSDL("Sai tên đăng nhập hoặc mật khẩu");
-        NhanVien nv = ds.get(0);
-        if (!nv.isHoatDong()) throw new LoiCSDL("Tài khoản đã bị khóa, hãy liên hệ quản lý");
+        JsonObject kq = goi("taikhoan.php", "dangNhap", "tenDangNhap", tenDangNhap.trim(), "matKhau", matKhau)
+                .getAsJsonObject();
+        NhanVien nv = docNhanVien(kq.getAsJsonObject("nhanVien"));
+        phien().edit().putString(KHOA_TOKEN, kq.get("token").getAsString()).apply();
         luuPhien(nv);
         return nv;
     }
 
     public void dangXuat() {
-        phien().edit().remove(KHOA_NHAN_VIEN).remove(KHOA_QUAN_LY).apply();
+        phien().edit().remove(KHOA_NHAN_VIEN).remove(KHOA_QUAN_LY).remove(KHOA_TOKEN).apply();
     }
 
+    /** Người đang đăng nhập; null nếu chưa đăng nhập, token hết hạn hoặc tài khoản bị khóa. */
     public NhanVien layNguoiDangNhap() throws LoiCSDL {
-        int id = idNguoiDangNhap();
-        if (id == 0) return null;
-        ArrayList<NhanVien> ds = chay(c -> danhSach(c, SQL_NHAN_VIEN + " WHERE id = ? AND is_active = 1",
-                CafeDatabase::docNhanVien, id));
-        if (ds.isEmpty()) return null;
-        luuPhien(ds.get(0));
-        return ds.get(0);
-    }
-
-    private Integer nhanVien(Connection c) throws SQLException {
-        long id = so(c, "SELECT id FROM Users WHERE id = ? AND is_active = 1", idNguoiDangNhap());
-        return id == 0 ? null : (int) id;
+        if (!daDangNhap()) return null;
+        try {
+            NhanVien nv = docNhanVien(goi("taikhoan.php", "nguoiDangNhap").getAsJsonObject());
+            luuPhien(nv);
+            return nv;
+        } catch (LoiCSDL e) {
+            if (e.isHetPhien()) return null;
+            throw e;
+        }
     }
 
     public void doiMatKhau(String matKhauCu, String matKhauMoi) throws LoiCSDL {
-        int soDong = chay(c -> ghi(c, "UPDATE Users SET password_hash = SHA2(?, 256)"
-                + " WHERE id = ? AND password_hash = SHA2(?, 256)", matKhauMoi, idNguoiDangNhap(), matKhauCu));
-        if (soDong == 0) throw new LoiCSDL("Mật khẩu hiện tại không đúng");
+        goi("taikhoan.php", "doiMatKhau", "matKhauCu", matKhauCu, "matKhauMoi", matKhauMoi);
     }
 
-    //Quản lý tài khoản (chỉ quản lý)
+    //Quản lý tài khoản (chỉ quản lý, API kiểm tra lại quyền)
 
     public ArrayList<NhanVien> layTatCaNhanVien() throws LoiCSDL {
-        canQuanLy();
-        return chay(c -> danhSach(c, SQL_NHAN_VIEN + " ORDER BY is_active DESC, role = 'ADMIN' DESC, id",
-                CafeDatabase::docNhanVien));
+        ArrayList<NhanVien> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(goi("taikhoan.php", "danhSach"))) ds.add(docNhanVien(o));
+        return ds;
     }
 
     public int themNhanVien(String tenDangNhap, String hoTen, boolean quanLy, String soDienThoai) throws LoiCSDL {
-        canQuanLy();
-        return chay(c -> them(c, "INSERT INTO Users (username, password_hash, full_name, role, phone)"
-                        + " VALUES (?, SHA2(?, 256), ?, ?, ?)",
-                tenDangNhap.trim(), MAT_KHAU_MAC_DINH, hoTen.trim(), quanLy ? "ADMIN" : "STAFF",
-                rongThanhNull(soDienThoai)));
+        return goi("taikhoan.php", "them", "tenDangNhap", tenDangNhap.trim(), "hoTen", hoTen.trim(),
+                "quanLy", quanLy, "soDienThoai", soDienThoai).getAsInt();
     }
 
     public void datLaiMatKhau(int id) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> ghi(c, "UPDATE Users SET password_hash = SHA2(?, 256) WHERE id = ?", MAT_KHAU_MAC_DINH, id));
+        goi("taikhoan.php", "datLaiMatKhau", "id", id);
     }
 
     public void khoaTaiKhoan(int id, boolean khoa) throws LoiCSDL {
-        canQuanLy();
-        if (khoa && id == idNguoiDangNhap()) throw new LoiCSDL("Không thể tự khóa tài khoản đang đăng nhập");
-        chay(c -> {
-            if (khoa) {
-                long conLai = so(c, "SELECT COUNT(*) FROM Users WHERE is_active = 1 AND role = 'ADMIN' AND id <> ?", id);
-                long laQuanLy = so(c, "SELECT COUNT(*) FROM Users WHERE id = ? AND role = 'ADMIN'", id);
-                if (laQuanLy > 0 && conLai == 0) throw new LoiCSDL("Phải còn ít nhất một quản lý hoạt động");
-            }
-            return ghi(c, "UPDATE Users SET is_active = ? WHERE id = ?", khoa ? 0 : 1, id);
-        });
+        goi("taikhoan.php", "khoa", "id", id, "khoa", khoa);
     }
 
     //BÀN
 
-    private static final String SQL_BAN = "SELECT t.id, t.name, t.area, t.seats, t.status,"
-            + " o.id, o.guest_count, UNIX_TIMESTAMP(o.created_at) * 1000,"
-            + " (SELECT COALESCE(SUM(quantity), 0) FROM OrderDetails WHERE order_id = o.id),"
-            + " (SELECT COALESCE(SUM(quantity * unit_price), 0) FROM OrderDetails WHERE order_id = o.id)"
-            + " FROM `Tables` t LEFT JOIN Orders o ON o.table_id = t.id AND o.status = 'OPEN'";
-
-    private static Ban docBan(ResultSet rs) throws SQLException {
-        Ban ban = new Ban(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), Ban.tuMa(rs.getString(5)));
-        int hoaDonId = rs.getInt(6);
-        if (!rs.wasNull()) {
-            ban.setHoaDonId(hoaDonId);
-            ban.setSoKhach(rs.getInt(7));
-            ban.setGioVao(rs.getLong(8));
-            ban.setSoMon(rs.getInt(9));
-            ban.setTamTinh(rs.getLong(10));
+    private static Ban docBan(JsonObject o) {
+        Ban ban = new Ban(nguyen(o, "id"), chuoi(o, "tenBan"), chuoi(o, "khuVuc"), nguyen(o, "soCho"),
+                Ban.tuMa(chuoi(o, "trangThai")));
+        if (coGiaTri(o, "hoaDonId")) {
+            ban.setHoaDonId(nguyen(o, "hoaDonId"));
+            ban.setSoKhach(nguyen(o, "soKhach"));
+            ban.setGioVao(so(o, "gioVao"));
+            ban.setSoMon(nguyen(o, "soMon"));
+            ban.setTamTinh(so(o, "tamTinh"));
         }
         return ban;
     }
 
     public ArrayList<Ban> layDanhSachBan() throws LoiCSDL {
-        return chay(c -> danhSach(c, SQL_BAN + " ORDER BY t.id", CafeDatabase::docBan));
-    }
-
-    private Ban layBan(Connection c, int banId) throws SQLException, LoiCSDL {
-        ArrayList<Ban> ds = danhSach(c, SQL_BAN + " WHERE t.id = ?", CafeDatabase::docBan, banId);
-        if (ds.isEmpty()) throw new LoiCSDL("Không tìm thấy bàn");
-        return ds.get(0);
+        ArrayList<Ban> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(goi("ban.php", "danhSach"))) ds.add(docBan(o));
+        return ds;
     }
 
     public void themBan(Ban ban) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> them(c, "INSERT INTO `Tables` (name, area, seats) VALUES (?, ?, ?)",
-                ban.getTenBan(), ban.getKhuVuc(), ban.getSoCho()));
+        goi("ban.php", "them", "tenBan", ban.getTenBan(), "khuVuc", ban.getKhuVuc(), "soCho", ban.getSoCho());
     }
 
     public void suaBan(Ban ban) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> ghi(c, "UPDATE `Tables` SET name = ?, area = ?, seats = ? WHERE id = ?",
-                ban.getTenBan(), ban.getKhuVuc(), ban.getSoCho(), ban.getId()));
+        goi("ban.php", "sua", "id", ban.getId(), "tenBan", ban.getTenBan(), "khuVuc", ban.getKhuVuc(),
+                "soCho", ban.getSoCho());
     }
 
     public void xoaBan(int banId) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> {
-            if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ? AND status = 'OPEN'", banId) > 0) {
-                throw new LoiCSDL("Bàn đang có khách, không thể xóa");
-            }
-            if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ?", banId) > 0) {
-                throw new LoiCSDL("Bàn đã có lịch sử hóa đơn nên không xóa được. Hãy chuyển bàn sang \"Bảo trì\".");
-            }
-            return ghi(c, "DELETE FROM `Tables` WHERE id = ?", banId);
-        });
+        goi("ban.php", "xoa", "id", banId);
     }
 
     public void capNhatTrangThaiBan(int banId, int trangThai) throws LoiCSDL {
-        chay(c -> {
-            Ban ban = layBan(c, banId);
-            boolean trangThaiCoKhach = trangThai == Ban.CO_KHACH || trangThai == Ban.CHO_THANH_TOAN;
-            if (!ban.isTrong() && !trangThaiCoKhach) {
-                throw new LoiCSDL("Bàn đang có khách, hãy thanh toán hoặc hủy order trước");
-            }
-            if (ban.isTrong() && trangThaiCoKhach) {
-                throw new LoiCSDL("Bàn chưa có order, hãy mở bàn để gọi món");
-            }
-            return ghi(c, "UPDATE `Tables` SET status = ? WHERE id = ?", Ban.maTrangThai(trangThai), banId);
-        });
+        goi("ban.php", "capNhatTrangThai", "id", banId, "trangThai", Ban.maTrangThai(trangThai));
     }
 
-    private int taoOrder(Connection c, int banId, int soKhach, String tenKhach) throws SQLException, LoiCSDL {
-        Integer nhanVien = nhanVien(c);
-        if (banId <= 0) {
-            return them(c, "INSERT INTO Orders (table_id, user_id, guest_count, note) VALUES (NULL, ?, ?, ?)",
-                    nhanVien, soKhach, rongThanhNull(tenKhach));
-        }
-        try (PreparedStatement ps = lenh(c, "SELECT status FROM `Tables` WHERE id = ? FOR UPDATE", banId);
-             ResultSet rs = ps.executeQuery()) {
-            if (!rs.next()) throw new LoiCSDL("Không tìm thấy bàn");
-        }
-        if (so(c, "SELECT COUNT(*) FROM Orders WHERE table_id = ? AND status = 'OPEN'", banId) > 0) {
-            throw new LoiCSDL("Bàn đã có khách");
-        }
-        int hoaDonId = them(c, "INSERT INTO Orders (table_id, user_id, guest_count) VALUES (?, ?, ?)",
-                banId, nhanVien, soKhach);
-        ghi(c, "UPDATE `Tables` SET status = 'SERVING' WHERE id = ?", banId);
-        return hoaDonId;
+    public void doiBan(int hoaDonId, int banMoiId) throws LoiCSDL {
+        goi("ban.php", "doiBan", "hoaDonId", hoaDonId, "banMoiId", banMoiId);
     }
 
-    public int taoDonHang(int banId, int soKhach, String tenKhach, ArrayList<ChiTietHoaDon> dsMon) throws LoiCSDL {
-        if (dsMon.isEmpty()) throw new LoiCSDL("Giỏ hàng đang trống");
-        return giaoDich(c -> {
-            int hoaDonId = taoOrder(c, banId, soKhach, tenKhach);
-            themMon(c, hoaDonId, dsMon);
-            return hoaDonId;
-        });
+    public void gopBan(int hoaDonNguonId, int hoaDonDichId) throws LoiCSDL {
+        if (hoaDonNguonId == hoaDonDichId) throw new LoiCSDL("Không thể gộp vào chính nó");
+        goi("ban.php", "gopBan", "hoaDonNguonId", hoaDonNguonId, "hoaDonDichId", hoaDonDichId);
     }
 
     //DANH MỤC
 
     public ArrayList<DanhMuc> layDanhSachDanhMuc() throws LoiCSDL {
-        return chay(c -> danhSach(c, "SELECT c.id, c.name,"
-                        + " (SELECT COUNT(*) FROM Drinks d WHERE d.category_id = c.id) FROM Categories c ORDER BY c.id",
-                rs -> new DanhMuc(rs.getInt(1), rs.getString(2), rs.getInt(3))));
+        ArrayList<DanhMuc> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(goi("thucdon.php", "danhMuc"))) {
+            ds.add(new DanhMuc(nguyen(o, "soMon"), chuoi(o, "ten"), nguyen(o, "id")));
+        }
+        return ds;
     }
 
     public DanhMuc themDanhMuc(String ten) throws LoiCSDL {
-        canQuanLy();
-        return chay(c -> new DanhMuc(them(c, "INSERT INTO Categories (name) VALUES (?)", ten), ten, 0));
+        return new DanhMuc(0, ten, goi("thucdon.php", "themDanhMuc", "ten", ten).getAsInt());
     }
 
     public void doiTenDanhMuc(int id, String tenMoi) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> ghi(c, "UPDATE Categories SET name = ? WHERE id = ?", tenMoi, id));
+        goi("thucdon.php", "doiTenDanhMuc", "id", id, "ten", tenMoi);
     }
 
     public void xoaDanhMuc(int id) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> {
-            long soMon = so(c, "SELECT COUNT(*) FROM Drinks WHERE category_id = ?", id);
-            if (soMon > 0) {
-                throw new LoiCSDL("Danh mục còn " + soMon + " món. Hãy chuyển hoặc xóa các món trước.");
-            }
-            return ghi(c, "DELETE FROM Categories WHERE id = ?", id);
-        });
+        goi("thucdon.php", "xoaDanhMuc", "id", id);
     }
 
     //THỨC UỐNG
 
-    private static final String SQL_THUC_UONG = "SELECT d.id, d.code, d.name, c.name, d.description, d.price,"
-            + " d.cost_price, d.image_uri, d.is_available, d.is_best_seller, d.category_id"
-            + " FROM Drinks d JOIN Categories c ON c.id = d.category_id";
-
-    private static ThucUong docThucUong(ResultSet rs) throws SQLException {
-        ThucUong tu = new ThucUong(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-                rs.getString(5), rs.getLong(6), rs.getLong(7), rs.getString(8),
-                rs.getInt(9) == 1, rs.getInt(10) == 1);
-        tu.setDanhMucId(rs.getInt(11));
+    private static ThucUong docThucUong(JsonObject o) {
+        ThucUong tu = new ThucUong(nguyen(o, "id"), chuoi(o, "maMon"), chuoi(o, "tenMon"), chuoi(o, "danhMuc"),
+                chuoi(o, "moTa"), so(o, "gia"), so(o, "giaVon"), chuoi(o, "uriAnh"),
+                dung(o, "conBan"), dung(o, "banChay"));
+        tu.setDanhMucId(nguyen(o, "danhMucId"));
         return tu;
     }
 
     /** Gồm cả món tạm hết (Gọi món hiện làm mờ để nhân viên báo khách). */
     public ArrayList<ThucUong> layDanhSachThucUong(int danhMucId, String tuKhoa) throws LoiCSDL {
-        StringBuilder where = new StringBuilder(" WHERE 1=1");
-        ArrayList<Object> thamSo = new ArrayList<>();
-        if (danhMucId > 0) {
-            where.append(" AND d.category_id = ?");
-            thamSo.add(danhMucId);
+        ArrayList<ThucUong> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(goi("thucdon.php", "danhSachMon", "danhMucId", danhMucId,
+                "tuKhoa", tuKhoa == null ? "" : tuKhoa))) {
+            ds.add(docThucUong(o));
         }
-        if (tuKhoa != null && !tuKhoa.trim().isEmpty()) {
-            where.append(" AND (d.name LIKE ? OR d.code LIKE ?)");
-            thamSo.add("%" + tuKhoa.trim() + "%");
-            thamSo.add("%" + tuKhoa.trim() + "%");
-        }
-        String sql = SQL_THUC_UONG + where + " ORDER BY d.is_best_seller DESC, c.id, d.name";
-        return chay(c -> danhSach(c, sql, CafeDatabase::docThucUong, thamSo.toArray()));
+        return ds;
     }
 
     public ThucUong layThucUong(int id) throws LoiCSDL {
-        return chay(c -> {
-            ArrayList<ThucUong> ds = danhSach(c, SQL_THUC_UONG + " WHERE d.id = ?", CafeDatabase::docThucUong, id);
-            if (ds.isEmpty()) throw new LoiCSDL("Không tìm thấy món");
-            return ds.get(0);
-        });
+        return docThucUong(goi("thucdon.php", "layMon", "id", id).getAsJsonObject());
     }
 
-    private static Object[] giaTriThucUong(ThucUong tu) {
-        return new Object[]{tu.getDanhMucId(), rongThanhNull(tu.getMaMon()), tu.getTenMon(),
-                rongThanhNull(tu.getMoTa()), tu.getGia(), tu.getGiaVon(), rongThanhNull(tu.getUriAnh()),
-                tu.isConBan() ? 1 : 0, tu.isBanChay() ? 1 : 0};
-    }
-
-    private static String rongThanhNull(String s) {
-        return s == null || s.trim().isEmpty() ? null : s.trim();
+    private Object[] giaTriThucUong(ThucUong tu) {
+        return new Object[]{"id", tu.getId(), "danhMucId", tu.getDanhMucId(), "maMon", tu.getMaMon(),
+                "tenMon", tu.getTenMon(), "moTa", tu.getMoTa(), "gia", tu.getGia(), "giaVon", tu.getGiaVon(),
+                "uriAnh", tu.getUriAnh(), "conBan", tu.isConBan(), "banChay", tu.isBanChay()};
     }
 
     public void themThucUong(ThucUong tu) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> them(c, "INSERT INTO Drinks (category_id, code, name, description, price, cost_price,"
-                + " image_uri, is_available, is_best_seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", giaTriThucUong(tu)));
+        goi("thucdon.php", "themMon", giaTriThucUong(tu));
     }
 
     public void suaThucUong(ThucUong tu) throws LoiCSDL {
-        canQuanLy();
-        Object[] giaTri = giaTriThucUong(tu);
-        Object[] thamSo = new Object[giaTri.length + 1];
-        System.arraycopy(giaTri, 0, thamSo, 0, giaTri.length);
-        thamSo[giaTri.length] = tu.getId();
-        chay(c -> ghi(c, "UPDATE Drinks SET category_id = ?, code = ?, name = ?, description = ?, price = ?,"
-                + " cost_price = ?, image_uri = ?, is_available = ?, is_best_seller = ? WHERE id = ?", thamSo));
+        goi("thucdon.php", "suaMon", giaTriThucUong(tu));
     }
 
     public void xoaThucUong(int id) throws LoiCSDL {
-        canQuanLy();
-        chay(c -> ghi(c, "DELETE FROM Drinks WHERE id = ?", id));
+        goi("thucdon.php", "xoaMon", "id", id);
     }
 
     //ĐƠN GỌI MÓN / HÓA ĐƠN
 
-    /** Đơn mang đi (không gắn bàn): tên lấy từ note, không có thì "Mang đi #id". */
-    private static final String SQL_HOA_DON = "SELECT o.id, o.table_id,"
-            + " COALESCE(t.name, NULLIF(o.note, ''), CONCAT('Mang đi #', o.id)),"
-            + " COALESCE(t.area, 'Mang đi / tại quầy'), o.guest_count, o.status,"
-            + " UNIX_TIMESTAMP(o.created_at) * 1000, UNIX_TIMESTAMP(o.closed_at) * 1000,"
-            + " (SELECT COALESCE(SUM(quantity), 0) FROM OrderDetails WHERE order_id = o.id),"
-            + " (SELECT COALESCE(SUM(quantity * unit_price), 0) FROM OrderDetails WHERE order_id = o.id),"
-            + " i.id, i.invoice_code, i.subtotal, i.discount, i.total, i.payment_method,"
-            + " i.amount_received, UNIX_TIMESTAMP(i.paid_at) * 1000, u.full_name"
-            + " FROM Orders o LEFT JOIN `Tables` t ON t.id = o.table_id LEFT JOIN Invoices i ON i.order_id = o.id"
-            + " LEFT JOIN Users u ON u.id = COALESCE(i.user_id, o.user_id)";
-
-    private static HoaDon docHoaDon(ResultSet rs) throws SQLException {
+    private static HoaDon docHoaDon(JsonObject o) {
         HoaDon hd = new HoaDon();
-        hd.setId(rs.getInt(1));
-        hd.setBanId(rs.getInt(2));
-        hd.setTenBan(rs.getString(3));
-        hd.setKhuVuc(rs.getString(4));
-        hd.setSoKhach(rs.getInt(5));
-        String trangThai = rs.getString(6);
+        hd.setId(nguyen(o, "id"));
+        hd.setBanId(nguyen(o, "banId"));
+        hd.setTenBan(chuoi(o, "tenBan"));
+        hd.setKhuVuc(chuoi(o, "khuVuc"));
+        hd.setSoKhach(nguyen(o, "soKhach"));
+        String trangThai = chuoi(o, "trangThai");
         hd.setTrangThai("PAID".equals(trangThai) ? HoaDon.DA_THANH_TOAN
                 : "CANCELLED".equals(trangThai) ? HoaDon.DA_HUY : HoaDon.DANG_PHUC_VU);
-        hd.setGioVao(rs.getLong(7));
-        hd.setSoMon(rs.getInt(9));
-        hd.setTenNhanVien(rs.getString(19));
-        rs.getInt(11);
-        if (rs.wasNull()) {
+        hd.setGioVao(so(o, "gioVao"));
+        hd.setSoMon(nguyen(o, "soMon"));
+        hd.setTenNhanVien(chuoi(o, "tenNhanVien"));
+        if (!coGiaTri(o, "hoaDonId")) {
             // Chưa có hóa đơn: đang phục vụ hoặc đã hủy
             hd.setMaHoaDon(String.format(Locale.ROOT, "DH%04d", hd.getId()));
-            hd.setTamTinh(rs.getLong(10));
-            hd.setGioRa(rs.getLong(8));
+            hd.setTamTinh(so(o, "tamTinhDon"));
+            hd.setGioRa(so(o, "gioDong"));
         } else {
-            hd.setMaHoaDon(rs.getString(12));
-            hd.setTamTinh(rs.getLong(13));
-            hd.setGiamGia(rs.getLong(14));
-            hd.setTongTien(rs.getLong(15));
-            hd.setPhuongThuc(HoaDon.tenPhuongThuc(rs.getString(16)));
-            hd.setKhachDua(rs.getLong(17));
-            hd.setGioRa(rs.getLong(18));
+            hd.setMaHoaDon(chuoi(o, "maHoaDon"));
+            hd.setTamTinh(so(o, "tamTinh"));
+            hd.setGiamGia(so(o, "giamGia"));
+            hd.setTongTien(so(o, "tongTien"));
+            hd.setPhuongThuc(HoaDon.tenPhuongThuc(chuoi(o, "phuongThuc")));
+            hd.setKhachDua(so(o, "khachDua"));
+            hd.setGioRa(so(o, "gioThanhToan"));
         }
         return hd;
     }
 
-    private HoaDon layHoaDon(Connection c, int id) throws SQLException, LoiCSDL {
-        ArrayList<HoaDon> ds = danhSach(c, SQL_HOA_DON + " WHERE o.id = ?", CafeDatabase::docHoaDon, id);
-        if (ds.isEmpty()) throw new LoiCSDL("Không tìm thấy đơn");
-        return ds.get(0);
+    private static ArrayList<HoaDon> docDanhSachHoaDon(JsonElement data) {
+        ArrayList<HoaDon> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(data)) ds.add(docHoaDon(o));
+        return ds;
     }
 
     public HoaDon layHoaDon(int id) throws LoiCSDL {
-        return chay(c -> layHoaDon(c, id));
+        return docHoaDon(goi("donhang.php", "layDon", "id", id).getAsJsonObject());
     }
 
     /** Các đơn đang phục vụ (chưa thanh toán / chưa hủy), mới nhất lên đầu. */
     public ArrayList<HoaDon> layDonDangPhucVu() throws LoiCSDL {
-        return chay(c -> danhSach(c, SQL_HOA_DON + " WHERE o.status = 'OPEN' ORDER BY o.created_at DESC",
-                CafeDatabase::docHoaDon));
+        return docDanhSachHoaDon(goi("donhang.php", "dangPhucVu"));
     }
 
     public ArrayList<HoaDon> timHoaDonDaThanhToan(String tuKhoa, long tuNgay, long denNgay, int gioiHan)
             throws LoiCSDL {
-        StringBuilder sql = new StringBuilder(SQL_HOA_DON).append(" WHERE o.status = 'PAID'");
-        ArrayList<Object> thamSo = new ArrayList<>();
-        if (tuKhoa != null && !tuKhoa.trim().isEmpty()) {
-            String k = "%" + tuKhoa.trim().replace("#", "") + "%";
-            sql.append(" AND (i.invoice_code LIKE ? OR t.name LIKE ? OR o.note LIKE ?)");
-            thamSo.add(k);
-            thamSo.add(k);
-            thamSo.add(k);
-        }
-        if (denNgay > 0) {
-            sql.append(" AND i.paid_at >= FROM_UNIXTIME(?) AND i.paid_at < FROM_UNIXTIME(?)");
-            thamSo.add(tuNgay / 1000);
-            thamSo.add(denNgay / 1000);
-        }
-        sql.append(" ORDER BY i.paid_at DESC, i.id DESC");
-        if (gioiHan > 0) sql.append(" LIMIT ").append(gioiHan);
-        return chay(c -> danhSach(c, sql.toString(), CafeDatabase::docHoaDon, thamSo.toArray()));
+        return docDanhSachHoaDon(goi("donhang.php", "timDaThanhToan", "tuKhoa", tuKhoa == null ? "" : tuKhoa,
+                "tuNgay", tuNgay, "denNgay", denNgay, "gioiHan", gioiHan));
     }
 
     public ArrayList<ChiTietHoaDon> layChiTietHoaDon(int hoaDonId) throws LoiCSDL {
-        return chay(c -> danhSach(c, "SELECT od.id, od.order_id, od.drink_id, od.drink_name, od.unit_price,"
-                + " od.quantity, od.note, od.status, UNIX_TIMESTAMP(od.created_at) * 1000, c.name, d.image_uri"
-                + " FROM OrderDetails od LEFT JOIN Drinks d ON d.id = od.drink_id"
-                + " LEFT JOIN Categories c ON c.id = d.category_id"
-                + " WHERE od.order_id = ? ORDER BY od.status = 'SERVED', od.created_at, od.id", rs -> {
+        ArrayList<ChiTietHoaDon> ds = new ArrayList<>();
+        for (JsonObject o : cacDong(goi("donhang.php", "chiTiet", "hoaDonId", hoaDonId))) {
             ChiTietHoaDon ct = new ChiTietHoaDon();
-            ct.setId(rs.getInt(1));
-            ct.setHoaDonId(rs.getInt(2));
-            ct.setThucUongId(rs.getInt(3));
-            ct.setTenMon(rs.getString(4));
-            ct.setDonGia(rs.getLong(5));
-            ct.setSoLuong(rs.getInt(6));
-            ct.setGhiChu(rs.getString(7));
-            ct.setTrangThai("SERVED".equals(rs.getString(8)) ? ChiTietHoaDon.DA_LEN_MON : ChiTietHoaDon.DANG_PHA_CHE);
-            ct.setThoiGian(rs.getLong(9));
-            ct.setDanhMuc(rs.getString(10));
-            ct.setUriAnh(rs.getString(11));
-            return ct;
-        }, hoaDonId));
-    }
-
-    private static int[] khoaDonDangMo(Connection c, int hoaDonId) throws SQLException, LoiCSDL {
-        try (PreparedStatement ps = lenh(c, "SELECT status, table_id, guest_count FROM Orders WHERE id = ? FOR UPDATE",
-                hoaDonId); ResultSet rs = ps.executeQuery()) {
-            if (!rs.next()) throw new LoiCSDL("Không tìm thấy đơn");
-            if (!"OPEN".equals(rs.getString(1))) throw new LoiCSDL("Đơn đã thanh toán hoặc đã hủy");
-            return new int[]{rs.getInt(2), rs.getInt(3)};
+            ct.setId(nguyen(o, "id"));
+            ct.setHoaDonId(nguyen(o, "hoaDonId"));
+            ct.setThucUongId(nguyen(o, "thucUongId"));
+            ct.setTenMon(chuoi(o, "tenMon"));
+            ct.setDonGia(so(o, "donGia"));
+            ct.setSoLuong(nguyen(o, "soLuong"));
+            ct.setGhiChu(chuoi(o, "ghiChu"));
+            ct.setTrangThai("SERVED".equals(chuoi(o, "trangThai"))
+                    ? ChiTietHoaDon.DA_LEN_MON : ChiTietHoaDon.DANG_PHA_CHE);
+            ct.setThoiGian(so(o, "thoiGian"));
+            ct.setDanhMuc(chuoi(o, "danhMuc"));
+            ct.setUriAnh(chuoi(o, "uriAnh"));
+            ds.add(ct);
         }
+        return ds;
     }
 
-    private static void kiemTraDongMon(Connection c, int chiTietId) throws SQLException, LoiCSDL {
-        long hoaDonId = so(c, "SELECT order_id FROM OrderDetails WHERE id = ?", chiTietId);
-        if (hoaDonId == 0) throw new LoiCSDL("Không tìm thấy món trong đơn");
-        khoaDonDangMo(c, (int) hoaDonId);
+    /** Danh sách món gửi lên API: thucUongId, soLuong, ghiChu. */
+    private static JsonArray dsMonGui(ArrayList<ChiTietHoaDon> dsMon) {
+        JsonArray mang = new JsonArray();
+        for (ChiTietHoaDon ct : dsMon) {
+            JsonObject o = new JsonObject();
+            o.addProperty("thucUongId", ct.getThucUongId());
+            o.addProperty("soLuong", ct.getSoLuong());
+            o.addProperty("ghiChu", ct.getGhiChu() == null ? "" : ct.getGhiChu());
+            mang.add(o);
+        }
+        return mang;
+    }
+
+    public int taoDonHang(int banId, int soKhach, String tenKhach, ArrayList<ChiTietHoaDon> dsMon) throws LoiCSDL {
+        if (dsMon.isEmpty()) throw new LoiCSDL("Giỏ hàng đang trống");
+        return goi("donhang.php", "taoDon", "banId", banId, "soKhach", soKhach,
+                "tenKhach", tenKhach == null ? "" : tenKhach, "dsMon", dsMonGui(dsMon)).getAsInt();
     }
 
     public void themMonVaoHoaDon(int hoaDonId, ArrayList<ChiTietHoaDon> dsMon) throws LoiCSDL {
-        giaoDich(c -> {
-            khoaDonDangMo(c, hoaDonId);
-            themMon(c, hoaDonId, dsMon);
-            return null;
-        });
-    }
-
-    private static void themMon(Connection c, int hoaDonId, ArrayList<ChiTietHoaDon> dsMon)
-            throws SQLException, LoiCSDL {
-        for (ChiTietHoaDon ct : dsMon) {
-            String ten;
-            long gia;
-            try (PreparedStatement ps = lenh(c, "SELECT name, price, is_available FROM Drinks WHERE id = ?",
-                    ct.getThucUongId()); ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) throw new LoiCSDL("Món không còn trong thực đơn");
-                ten = rs.getString(1);
-                gia = rs.getLong(2);
-                if (rs.getInt(3) != 1) throw new LoiCSDL(ten + " đang tạm hết");
-            }
-            String ghiChu = ct.getGhiChu() == null ? "" : ct.getGhiChu();
-            long dongCu = so(c, "SELECT id FROM OrderDetails WHERE order_id = ? AND drink_id = ? AND note = ?"
-                    + " AND status = 'PREPARING' AND unit_price = ?", hoaDonId, ct.getThucUongId(), ghiChu, gia);
-            if (dongCu > 0) {
-                ghi(c, "UPDATE OrderDetails SET quantity = quantity + ? WHERE id = ?", ct.getSoLuong(), dongCu);
-            } else {
-                them(c, "INSERT INTO OrderDetails (order_id, drink_id, drink_name, unit_price, quantity, note)"
-                        + " VALUES (?, ?, ?, ?, ?, ?)", hoaDonId, ct.getThucUongId(), ten, gia, ct.getSoLuong(), ghiChu);
-            }
-        }
+        goi("donhang.php", "themMon", "hoaDonId", hoaDonId, "dsMon", dsMonGui(dsMon));
     }
 
     public void capNhatSoLuong(int chiTietId, int soLuong) throws LoiCSDL {
-        giaoDich(c -> {
-            kiemTraDongMon(c, chiTietId);
-            return soLuong <= 0
-                    ? ghi(c, "DELETE FROM OrderDetails WHERE id = ?", chiTietId)
-                    : ghi(c, "UPDATE OrderDetails SET quantity = ? WHERE id = ?", soLuong, chiTietId);
-        });
+        goi("donhang.php", "capNhatSoLuong", "chiTietId", chiTietId, "soLuong", soLuong);
     }
 
     public void capNhatTrangThaiMon(int chiTietId, int trangThai) throws LoiCSDL {
-        giaoDich(c -> {
-            kiemTraDongMon(c, chiTietId);
-            return ghi(c, "UPDATE OrderDetails SET status = ? WHERE id = ?",
-                    trangThai == ChiTietHoaDon.DA_LEN_MON ? "SERVED" : "PREPARING", chiTietId);
-        });
+        goi("donhang.php", "capNhatTrangThaiMon", "chiTietId", chiTietId,
+                "daLenMon", trangThai == ChiTietHoaDon.DA_LEN_MON);
     }
 
     public void xoaChiTiet(int chiTietId) throws LoiCSDL {
@@ -621,62 +457,64 @@ public class CafeDatabase {
     }
 
     public void yeuCauThanhToan(int hoaDonId) throws LoiCSDL {
-        giaoDich(c -> ghi(c, "UPDATE `Tables` SET status = 'WAITING_PAYMENT' WHERE id = ?",
-                khoaDonDangMo(c, hoaDonId)[0]));
+        goi("donhang.php", "yeuCauThanhToan", "hoaDonId", hoaDonId);
     }
 
     public void huyHoaDon(int hoaDonId) throws LoiCSDL {
-        giaoDich(c -> {
-            int banId = khoaDonDangMo(c, hoaDonId)[0];
-            ghi(c, "UPDATE Orders SET status = 'CANCELLED', closed_at = NOW() WHERE id = ?", hoaDonId);
-            return ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", banId);
-        });
-    }
-
-    public void doiBan(int hoaDonId, int banMoiId) throws LoiCSDL {
-        giaoDich(c -> {
-            int banCu = khoaDonDangMo(c, hoaDonId)[0];
-            Ban moi = layBan(c, banMoiId);
-            if (moi.isCoNguoi()) throw new LoiCSDL("Bàn mới không trống");
-            Ban cu = layBan(c, banCu);
-            ghi(c, "UPDATE Orders SET table_id = ? WHERE id = ?", banMoiId, hoaDonId);
-            ghi(c, "UPDATE `Tables` SET status = ? WHERE id = ?", Ban.maTrangThai(cu.getTrangThai()), banMoiId);
-            return ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", banCu);
-        });
-    }
-
-    public void gopBan(int hoaDonNguonId, int hoaDonDichId) throws LoiCSDL {
-        if (hoaDonNguonId == hoaDonDichId) throw new LoiCSDL("Không thể gộp vào chính nó");
-        giaoDich(c -> {
-            int[] nguon = khoaDonDangMo(c, hoaDonNguonId);
-            khoaDonDangMo(c, hoaDonDichId);
-            ghi(c, "UPDATE OrderDetails SET order_id = ? WHERE order_id = ?", hoaDonDichId, hoaDonNguonId);
-            ghi(c, "UPDATE Orders SET guest_count = LEAST(guest_count + ?, 255) WHERE id = ?", nguon[1], hoaDonDichId);
-            ghi(c, "DELETE FROM Orders WHERE id = ?", hoaDonNguonId);
-            return ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", nguon[0]);
-        });
+        goi("donhang.php", "huy", "hoaDonId", hoaDonId);
     }
 
     public HoaDon thanhToan(int hoaDonId, long giamGia, String phuongThuc, long khachDua) throws LoiCSDL {
-        String maPhuongThuc = HoaDon.maPhuongThuc(phuongThuc);
-        return giaoDich(c -> {
-            int banId = khoaDonDangMo(c, hoaDonId)[0];
-            long tamTinh = so(c, "SELECT COALESCE(SUM(quantity * unit_price), 0) FROM OrderDetails WHERE order_id = ?",
-                    hoaDonId);
-            if (tamTinh <= 0) throw new LoiCSDL("Đơn chưa có món để thanh toán");
-            long giam = Math.max(0, Math.min(giamGia, tamTinh));
-            long tong = TienIch.lamTron(tamTinh - giam);
-            long nhan = "CASH".equals(maPhuongThuc) ? khachDua : tong;
-            if (nhan < tong) throw new LoiCSDL("Khách đưa chưa đủ tiền");
+        return docHoaDon(goi("donhang.php", "thanhToan", "hoaDonId", hoaDonId, "giamGia", giamGia,
+                "phuongThuc", HoaDon.maPhuongThuc(phuongThuc), "khachDua", khachDua).getAsJsonObject());
+    }
 
-            int hoaDonMoi = them(c, "INSERT INTO Invoices (order_id, user_id, subtotal, discount, total,"
-                            + " payment_method, amount_received, change_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    hoaDonId, nhanVien(c), tamTinh, giam, tong, maPhuongThuc, nhan, nhan - tong);
-            ghi(c, "UPDATE Invoices SET invoice_code = CONCAT('HD', LPAD(id, 4, '0')) WHERE id = ?", hoaDonMoi);
-            ghi(c, "UPDATE Orders SET status = 'PAID', closed_at = NOW() WHERE id = ?", hoaDonId);
-            ghi(c, "UPDATE OrderDetails SET status = 'SERVED' WHERE order_id = ?", hoaDonId);
-            if (banId > 0) ghi(c, "UPDATE `Tables` SET status = 'EMPTY' WHERE id = ?", banId);
-            return layHoaDon(c, hoaDonId);
-        });
+    // ===================== CHẠY NỀN =====================
+
+    /**
+     * Chạy việc gọi API trên luồng nền rồi trả kết quả / lỗi về luồng giao diện.
+     * Bỏ qua kết quả nếu màn hình đã đóng.
+     */
+    public static class ChayNen {
+
+        public interface Viec<T> {
+            T lam() throws LoiCSDL;
+        }
+
+        public interface KetQua<T> {
+            void nhan(T ketQua);
+        }
+
+        public interface Loi {
+            void nhan(String thongBao);
+        }
+
+        private static final ExecutorService LUONG_NEN = Executors.newFixedThreadPool(2);
+        private static final Handler LUONG_GIAO_DIEN = new Handler(Looper.getMainLooper());
+
+        public static <T> void chay(Activity activity, Viec<T> viec, KetQua<T> ketQua) {
+            chay(activity, viec, ketQua, thongBao -> Toast.makeText(activity, thongBao, Toast.LENGTH_LONG).show());
+        }
+
+        public static <T> void chay(Activity activity, Viec<T> viec, KetQua<T> ketQua, Loi loi) {
+            LUONG_NEN.execute(() -> {
+                T kq;
+                try {
+                    kq = viec.lam();
+                } catch (LoiCSDL e) {
+                    LUONG_GIAO_DIEN.post(() -> {
+                        if (conSong(activity)) loi.nhan(e.getMessage());
+                    });
+                    return;
+                }
+                LUONG_GIAO_DIEN.post(() -> {
+                    if (conSong(activity) && ketQua != null) ketQua.nhan(kq);
+                });
+            });
+        }
+
+        private static boolean conSong(Activity activity) {
+            return !activity.isFinishing() && !activity.isDestroyed();
+        }
     }
 }
